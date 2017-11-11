@@ -36,7 +36,7 @@ module.exports = NodeHelper.create({
 			if (!error && response.statusCode == 200) {
 				self.sendSocketNotification("DATA", body);
 			} else {
-				console.log(self.name + ": Could not load timepoint(s).");
+				console.log(self.name + ": Could not load timepoint(s) on url:" + ovUrl);
 			}
 		});
 
