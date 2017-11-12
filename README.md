@@ -2,9 +2,10 @@
 Magic Mirror - Dutch bus times 
 
 Based on a dutch public api for public transport
-
+#Installation
 Use git clone https://github.com/73cirdan/MMM-bustimes bustimes
-
+#Using  module
+##Get  timepointcode
 Module can show one or more busstop in your neighbourhood using timepoint code
 A timepoint code is a stop on eg a busline
 (more docs on: https://github.com/skywave/KV78Turbo-OVAPI/wiki/Line )
@@ -30,7 +31,7 @@ A timepoint code is a stop on eg a busline
   Mind the change from line to tpc in the URL
   Based on the example in step 2 use: http://v0.ovapi.nl/tpc/20320110
 
-Config options
+##Config options
 
 tpc: is a comma separated list "tpc1,tpc2" if you need more than one departure list
 displaymode: is one of "small", "medium", "large"
@@ -39,7 +40,7 @@ displaymode: is one of "small", "medium", "large"
   small - just the next bus, no use of <departs>
 departs: controls how many departs you want to see.
 
-Example config.js content for this module
+##Example config.js content for this module
 		{
 			module: "bustimes",
 			position: "top_left",
