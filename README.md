@@ -1,13 +1,13 @@
 # bustimes
 Magic Mirror - Dutch bus times 
 
-Based on a dutch public api for public transport
+Based on a dutch public api for public transport.
 # Installation
 Use 'git clone https://github.com/73cirdan/MMM-bustimes bustimes'
 # Using  module
 ## Get your timepointcode
 This module can show one or more bus stops in your neighbourhood using timepoint code.
-A timepoint code is a stop on e.gg. a bus or metro line.
+A timepoint code is a stop on e.g. a bus or metro line.
 (more docs on: https://github.com/skywave/KV78Turbo-OVAPI/wiki/Line )
 
 1. Use:
@@ -29,7 +29,8 @@ A timepoint code is a stop on e.gg. a bus or metro line.
   to check the tpc, this is what the code also does, remember the tpc.
   replace [tpc] with something in the form 8digit number.
   Mind the change from **line** to **tpc** in the URL.
-  *Based on the example in step 2 use: http://v0.ovapi.nl/tpc/20320110.*
+  *Based on the example in step 2 use: http://v0.ovapi.nl/tpc/20320110.  
+ThisThisThi
 
 ## Config options
 
