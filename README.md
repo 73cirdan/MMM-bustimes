@@ -30,14 +30,14 @@ A timepoint code is a stop on e.g. a bus or metro line.
   to check the tpc, this is what the code also does, remember the tpc.
   replace [tpc] with something in the form 8digit number.
   Mind the change from **line** to **tpc** in the URL.
-  *Based on the example in step 2 use: http://v0.ovapi.nl/tpc/20320110.  
-ThisThisThi  result
+  *Based on the example in step 2 use: http://v0.ovapi.nl/tpc/20320110.*
+  *Check the result. The passes part should contain busses, trams or boats stopping at this stop. All lines halting at this stop are included.*
 
 ## Config options
 
 First Header | Second Header
 ------------ | ------------- 
-tpc | is a comma separated list "tpc1,tpc2" if you need more than one departure list
+tpc | Just one tpc or a comma separated list "tpc1,tpc2" if you need more than one departure list
 displaymode | is one of "small", "medium", "large".
 .. | *large* - busline and time per row, display *departs*rows per tpcs.
 .. | *medium* - use <departs> to display a number of *departs* in one row, keep it low like 2 or 3
