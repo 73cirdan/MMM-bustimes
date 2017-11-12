@@ -35,12 +35,12 @@ A timepoint code is a stop on eg a busline.
 
 First Header | Second Header
 ------------ | ------------- 
-tpc |is a comma separated list "tpc1,tpc2" if you need more than one departure list
-displaymode| is one of "small", "medium", "large".
-  * large - busline and time per row, display <departs> rows per tpcs.
-  * medium - use <departs> to display a number of <departs> in one row, keep it low like 2 or 3
-  * small - just the next bus, no use of <departs>
-departs|controls how many departs you want to see.
+tpc | is a comma separated list "tpc1,tpc2" if you need more than one departure list
+displaymode | is one of "small", "medium", "large".
+ | *large* - busline and time per row, display <departs> rows per tpcs.
+ | *medium* - use <departs> to display a number of <departs> in one row, keep it low like 2 or 3
+ | *small* - just the next bus, no use of <departs>
+departs | controls how many departs you want to see.
 
 ## Example config.js content for this module
 		{
