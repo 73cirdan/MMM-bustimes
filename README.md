@@ -2,6 +2,7 @@
 Magic Mirror - Dutch bus times 
 
 Based on a Dutch public api for public transport.
+![call](https://github.com/73cirdan/MMM-bustimes/screenshot.png)
 # Installation
 Navigate into your MagicMirror's `modules` folder and execute
  'git clone https://github.com/73cirdan/MMM-bustimes bustimes'
