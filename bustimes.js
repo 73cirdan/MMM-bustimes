@@ -9,12 +9,7 @@ Module.register("bustimes", {
 
     // Default module config.
     defaults: {
-        updateInterval: 10 * 60 * 1000, // every 10 minutes
         animationSpeed: 1000,
-        timeFormat: config.timeFormat,
-        lang: config.language,
-
-        initialLoadDelay: 0, // 0 seconds delay
 
         apiBase: "http://v0.ovapi.nl",
         tpcEndpoint: "tpc",
