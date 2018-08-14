@@ -1,26 +1,26 @@
 .delay {
-	color: #FF0000;
+    color: #FF0000;
 }
 
 .ovheader {
-	text-align: left;
+    text-align: left;
 }
 
 .ovheader_r {
-	text-align: right;
+    text-align: right;
 }
 
 .lineinfo {
-	text-align: right;
-	padding: 0px 5px 0px 5px;
+    text-align: right;
+    padding: 0px 5px 0px 5px;
 }
 
 .timeinfo {
-	padding: 0px 5px 0px 5px;	
-	text-align: left;
+    padding: 0px 5px 0px 5px;
+    text-align: left;
 }
 
 .destinationinfo {
-	padding: 0px 5px 0px 5px;	
-	text-align: left;
+    padding: 0px 5px 0px 5px;
+    text-align: left;
 }
