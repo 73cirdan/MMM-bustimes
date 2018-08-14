@@ -77,14 +77,14 @@ Module.register("bustimes", {
 
         if (this.config.displaymode === "large") {
             var row = document.createElement("tr");
-            var timeHeader = document.createElement("th");
-            timeHeader.innerHTML = this.translate("departure");
-            timeHeader.className = "ovheader";
-            row.appendChild(timeHeader);
             var lineHeader = document.createElement("th");
             lineHeader.innerHTML = this.translate("line");
             lineHeader.className = "ovheader_r";
             row.appendChild(lineHeader);
+            var timeHeader = document.createElement("th");
+            timeHeader.innerHTML = this.translate("departure");
+            timeHeader.className = "ovheader";
+            row.appendChild(timeHeader);
             table.appendChild(row);
         }
 
@@ -123,6 +123,18 @@ Module.register("bustimes", {
                 if (this.config.debug)
                     Log.info(this.name + ": " + currentDeparture.TransportType.toLowerCase() + " " + currentDeparture.LinePublicNumber + " will arrive at: " + time);
 
+                var cellLine = document.createElement("td");
+                cellLine.innerHTML = currentDeparture.LinePublicNumber;
+                if (currentDeparture.Destination != null) {
+                    cellLine.innerHTML += " (" + currentDeparture.Destination + ")";
+                }
+                cellLine.className = "lineinfo";
+                if (this.config.displaymode === "small") {
+                    if (numberOfTimes == 0) tpcRow.appendChild(cellLine);
+                } else {
+                    row.appendChild(cellLine);
+                }
+
                 var cellDeparture = document.createElement("td");
                 cellDeparture.innerHTML = time;
                 cellDeparture.className = "timeinfo";
@@ -139,14 +151,6 @@ Module.register("bustimes", {
                 //cellTransport.appendChild(symbolTransportation);
                 //row.appendChild(cellTransport);
 
-                var cellLine = document.createElement("td");
-                cellLine.innerHTML = currentDeparture.LinePublicNumber;
-                cellLine.className = "lineinfo";
-                if (this.config.displaymode === "small") {
-                    if (numberOfTimes == 0) tpcRow.appendChild(cellLine);
-                } else {
-                    row.appendChild(cellLine);
-                }
 
                 table.appendChild(row);
                 if ((this.config.displaymode === "large") ||
@@ -234,11 +238,12 @@ Module.register("bustimes", {
                 if (j == "Passes") {
                     for (var k in passes) {
                         var bus = passes[k];
+                        var destination = "DestinationName50" in bus ? bus.DestinationName50 : null;
 
                         if (this.config.destinations.length > 0 && !this.config.destinations.includes(bus.DestinationCode)) {
                             if (this.config.debug)
                                 Log.info(this.name + ": Skipped line " + k + " (number " + bus.LinePublicNumber + ") "
-                                + " with destination " + bus.DestinationCode + ("DestinationName50" in bus ? " (" + bus.DestinationName50 + ")" : bus.DestinationCode));
+                                + " with destination " + bus.DestinationCode + " (" + (destination != null ? destination : "no name") + ")");
                             continue;
                         }
 
@@ -247,6 +252,7 @@ Module.register("bustimes", {
                             TransportType: bus.TransportType,
                             LinePublicNumber: bus.LinePublicNumber,
                             TimingPointName: bus.TimingPointName,
+                            Destination: destination,
                         });
                     }
                 }
