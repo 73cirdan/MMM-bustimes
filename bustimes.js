@@ -33,10 +33,11 @@ Module.register("bustimes", {
 
     // Define required translations.
     getTranslations: function() {
-        // The translations for the default modules are defined in the core translation files.
-        // Therefor we can just return false. Otherwise we should have returned a dictionary.
-        // If you're trying to build yiur own module including translations, check out the documentation.
-        return false;
+        return {
+            en: "translations/en.json",
+            nl: "translations/nl.json",
+            it: "translations/it.json",
+        };
     },
 
     // Define start sequence.
@@ -65,7 +66,7 @@ Module.register("bustimes", {
             return wrapper;
         }
         if (!this.departures.length) {
-            wrapper.innerHTML = "No data";
+            wrapper.innerHTML = this.translate("noData");
             wrapper.className = "dimmed light small";
             return wrapper;
         }
@@ -77,11 +78,11 @@ Module.register("bustimes", {
         if (this.config.displaymode === "large") {
             var row = document.createElement("tr");
             var timeHeader = document.createElement("th");
-            timeHeader.innerHTML = "Vertrek";
+            timeHeader.innerHTML = this.translate("departure");
             timeHeader.className = "ovheader";
             row.appendChild(timeHeader);
             var lineHeader = document.createElement("th");
-            lineHeader.innerHTML = "Lijn";
+            lineHeader.innerHTML = this.translate("line");
             lineHeader.className = "ovheader_r";
             row.appendChild(lineHeader);
             table.appendChild(row);
