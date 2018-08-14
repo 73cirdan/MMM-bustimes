@@ -28,6 +28,9 @@ module.exports = NodeHelper.create({
 
         var ovUrl = this.config.apiBase + "/" + this.config.tpcEndpoint + "/" + this.config.timepointcode;
 
+        if (self.config.debug)
+            console.log(self.name + ": Requesting new data");
+
         request({
             url: ovUrl,
             method: 'GET',

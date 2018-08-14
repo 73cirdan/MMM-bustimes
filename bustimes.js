@@ -15,6 +15,8 @@ Module.register("bustimes", {
         tpcEndpoint: "tpc",
 
         refreshInterval: 1000 * 60, // refresh every minute
+
+        debug: false
     },
 
     // Define required scripts.
@@ -89,7 +91,8 @@ Module.register("bustimes", {
             // print the TimingPoint only once as a row
             if (currentTPC != currentDeparture.TimingPointName) {
                 currentTPC = currentDeparture.TimingPointName;
-                //Log.info(self.name + ": "+currentTPC);
+                if (this.config.debug)
+                    Log.info(this.name + ": stop " + currentTPC);
                 tpcRow = document.createElement("tr");
                 var cellTpc = document.createElement("td");
                 cellTpc.innerHTML = currentTPC;
@@ -110,7 +113,8 @@ Module.register("bustimes", {
             if (numberOfTimes < this.config.departs) {
                 var time = currentDeparture.ExpectedArrivalTime;
                 time = (time).substring((time).indexOf('T') + 1, (time).length);
-                //Log.info(this.name + ": the bus "+currentDeparture.LinePublicNumber+" will arrive at: "+time);
+                if (this.config.debug)
+                    Log.info(this.name + ": " + currentDeparture.TransportType.toLowerCase() + " " + currentDeparture.LinePublicNumber + " will arrive at: " + time);
 
                 var cellDeparture = document.createElement("td");
                 cellDeparture.innerHTML = time;
@@ -209,6 +213,9 @@ Module.register("bustimes", {
             return;
         }
 
+        if (this.config.debug)
+            Log.info(this.name + ": Received data");
+
         var msg = JSON.parse(data); // converts it to a JS native object.
 
         this.departures = []; // our object for the Dom
@@ -222,6 +229,7 @@ Module.register("bustimes", {
                         var bus = passes[k];
                         this.departures.push({
                             ExpectedArrivalTime: bus.ExpectedArrivalTime,
+                            TransportType: bus.TransportType,
                             LinePublicNumber: bus.LinePublicNumber,
                             TimingPointName: bus.TimingPointName,
                         });
