@@ -16,6 +16,8 @@ Module.register("bustimes", {
 
         refreshInterval: 1000 * 60, // refresh every minute
 
+        destinations: null,
+
         debug: false
     },
 
@@ -43,6 +45,10 @@ Module.register("bustimes", {
 
         // Set locale.
         moment.locale(config.language);
+
+        if (!Array.isArray(this.config.destinations)) {
+            this.config.destinations = [];
+        }
 
         this.loaded = false;
         this.sendSocketNotification('CONFIG', this.config);
@@ -227,6 +233,14 @@ Module.register("bustimes", {
                 if (j == "Passes") {
                     for (var k in passes) {
                         var bus = passes[k];
+
+                        if (this.config.destinations.length > 0 && !this.config.destinations.includes(bus.DestinationCode)) {
+                            if (this.config.debug)
+                                Log.info(this.name + ": Skipped line " + k + " (number " + bus.LinePublicNumber + ") "
+                                + " with destination " + bus.DestinationCode + ("DestinationName50" in bus ? " (" + bus.DestinationName50 + ")" : bus.DestinationCode));
+                            continue;
+                        }
+
                         this.departures.push({
                             ExpectedArrivalTime: bus.ExpectedArrivalTime,
                             TransportType: bus.TransportType,

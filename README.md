@@ -40,6 +40,8 @@ displaymode | is one of "small", "medium", "large".
 .. | *medium* - use <departs> to display a number of *departs* in one row, keep it low like 2 or 3
 .. | *small* - just the next bus, no use of *departs*
 departs | controls how many departs you want to see.
+destinations | Optional, an array with a every destination you care about. Only lines going to any of these destinations will be shown.
+.. | Valid codes can be found in step 3, under the entry 'DestinationCode' of each line.
 
 ## Example config.js content for this module
 		{
