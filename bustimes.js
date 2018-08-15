@@ -7,6 +7,8 @@
  */
 Module.register("bustimes", {
 
+    scheduledTimer: -1,
+
     // Default module config.
     defaults: {
         animationSpeed: 1000,
@@ -14,7 +16,7 @@ Module.register("bustimes", {
         apiBase: "http://v0.ovapi.nl",
         tpcEndpoint: "tpc",
 
-        refreshInterval: 1000 * 60, // refresh every minute
+        refreshInterval: 5 * 1000 * 60, // refresh every 5 minutes
 
         destinations: null,
 
@@ -51,9 +53,34 @@ Module.register("bustimes", {
             this.config.destinations = [];
         }
 
-        this.loaded = false;
-        this.sendSocketNotification('CONFIG', this.config);
+        this.resume();
+        this.requestData();
+    },
 
+    /* suspend()
+     * Disable refreshing.
+     */
+    suspend: function() {
+        if (this.scheduledTimer != -1) {
+            if (this.config.debug)
+                Log.info(this.name + ": Canceling updates");
+            clearInterval(scheduledTimer);
+            this.scheduledTimer = -1;
+        }
+    },
+
+    /* resume()
+     * Enable automatic refreshing.
+     */
+    resume: function() {
+        if (this.scheduledTimer == -1) {
+            if (this.config.debug)
+                Log.info(this.name + ": Scheduling updates");
+            var self = this;
+            this.scheduledTimer = setInterval(function() {
+                self.requestData();
+            }, this.config.refreshInterval);
+        }
     },
 
     // Override dom generator.
@@ -264,15 +291,24 @@ Module.register("bustimes", {
         this.updateDom(this.config.animationSpeed);
     },
 
+    /*
+     * Asks the node helper to request new data.
+     */
+    requestData: function() {
+        this.loaded = false;
+        this.updateDom();
+
+        if (this.config.debug)
+            Log.info(this.name + ": Requested data");
+
+        this.sendSocketNotification('GETDATA', this.config);
+    },
 
     socketNotificationReceived: function(notification, payload) {
-        if (notification === "STARTED") {
-            this.updateDom();
-        } else if (notification === "DATA") {
+        if (notification === "RESPONSE") {
             this.loaded = true;
             this.processBusTimes(payload);
         }
     }
-
 
 });

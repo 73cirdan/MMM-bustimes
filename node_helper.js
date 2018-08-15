@@ -15,7 +15,7 @@ var moment = require('moment');
 module.exports = NodeHelper.create({
 
     start: function() {
-        this.started = false;
+        this.running = false;
         this.config = null;
     },
 
@@ -25,36 +25,26 @@ module.exports = NodeHelper.create({
      */
     getData: function() {
         var self = this;
-
         var ovUrl = this.config.apiBase + "/" + this.config.tpcEndpoint + "/" + this.config.timepointcode;
-
-        if (self.config.debug)
-            console.log(self.name + ": Requesting new data");
 
         request({
             url: ovUrl,
             method: 'GET',
         }, function(error, response, body) {
-
+            self.running = false;
             if (!error && response.statusCode == 200) {
-                self.sendSocketNotification("DATA", body);
+                self.sendSocketNotification("RESPONSE", body);
             } else {
                 console.log(self.name + ": Could not load timepoint(s) on url:" + ovUrl);
             }
         });
-
-        setTimeout(function() {
-            self.getData();
-        }, this.config.refreshInterval);
     },
 
     socketNotificationReceived: function(notification, payload) {
-        var self = this;
-        if (notification === 'CONFIG' && self.started == false) {
-            self.config = payload;
-            self.sendSocketNotification("STARTED", true);
-            self.getData();
-            self.started = true;
+        if (notification === 'GETDATA' && this.running == false) {
+            this.running = true;
+            this.config = payload;
+            this.getData();
         }
     }
 });
