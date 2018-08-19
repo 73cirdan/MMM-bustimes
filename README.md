@@ -42,6 +42,8 @@ displaymode | is one of "small", "medium", "large".
 departs | controls how many departs you want to see.
 destinations | Optional, an array with a every destination you care about. Only lines going to any of these destinations will be shown.
 .. | Valid codes can be found in step 3, under the entry 'DestinationCode' of each line.
+showDestination | true or false to see the destination of a line.
+timeFormat | e.q. "HH:mm:ss" or "HH:mm" to control precision of the departure time
 
 ## Example config.js content for this module
 		{

@@ -17,6 +17,7 @@ Module.register("bustimes", {
         tpcEndpoint: "tpc",
 
         refreshInterval: 5 * 1000 * 60, // refresh every 5 minutes
+	timeFormat: "HH:mm", 
 
         destinations: null,
 
@@ -145,13 +146,13 @@ Module.register("bustimes", {
 
             // print only the first three(config) time and line
             if (numberOfTimes < this.config.departs) {
-                var time = moment(currentDeparture.ExpectedArrivalTime).format("HH:mm");
+                var time = moment(currentDeparture.ExpectedArrivalTime).format(this.config.timeFormat);
                 if (this.config.debug)
                     Log.info(this.name + ": " + currentDeparture.TransportType.toLowerCase() + " " + currentDeparture.LinePublicNumber + " will arrive at: " + time);
 
                 var cellLine = document.createElement("td");
                 cellLine.innerHTML = currentDeparture.LinePublicNumber;
-                if (currentDeparture.Destination != null) {
+                if (currentDeparture.Destination != null && this.config.showDestination ) {
                     cellLine.innerHTML += " (" + currentDeparture.Destination + ")";
                 }
                 cellLine.className = "lineinfo";
