@@ -116,9 +116,8 @@ Module.register("bustimes",{
 
 			// print only the first three(config) time and line
 			if (numberOfTimes < this.config.departs) {	
-				var time = currentDeparture.ExpectedArrivalTime;
-				time = (time).substring((time).indexOf('T')+1, (time).length);
-    				//Log.info(this.name + ": the bus "+currentDeparture.LinePublicNumber+" will arrive at: "+time);
+				var time = moment(currentDeparture.ExpectedArrivalTime).format("HH:mm");
+  				//Log.info(this.name + ": the bus "+currentDeparture.LinePublicNumber+" will arrive at: "+time);
 			
 				var cellDeparture = document.createElement("td");
 				cellDeparture.innerHTML = time;
