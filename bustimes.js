@@ -304,6 +304,7 @@ Module.register("bustimes", {
         this.sendSocketNotification('GETDATA', this.config);
     },
 
+
     socketNotificationReceived: function(notification, payload) {
         if (notification === "RESPONSE") {
             this.loaded = true;
