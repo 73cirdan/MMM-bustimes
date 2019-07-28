@@ -17,7 +17,7 @@ Module.register("bustimes", {
         tpcEndpoint: "tpc",
 
         refreshInterval: 5 * 1000 * 60, // refresh every 5 minutes
-	timeFormat: "HH:mm", 
+        timeFormat: "HH:mm",
 
         destinations: null,
 
@@ -183,7 +183,7 @@ Module.register("bustimes", {
                 if ((this.config.displaymode === "large") ||
                     (this.config.departs == numberOfTimes + 1)) {
                     row = document.createElement("tr");
-                    }
+                }
             }
             numberOfTimes++;
 
@@ -240,7 +240,7 @@ Module.register("bustimes", {
     /* processBusTimes(data)
      * Uses the received data to set the various values.
      *
-     * argument data object - busstop information received form openapi
+     * argument data object - bus stop information received from OVapi
      */
     processBusTimes: function(data) {
 
