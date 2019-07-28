@@ -51,6 +51,7 @@ Module.register("bustimes", {
         moment.locale(config.language);
 
         this.errorMsg = "";
+        this.departures = {};
 
         if (!Array.isArray(this.config.destinations)) {
             this.config.destinations = [];
@@ -119,7 +120,11 @@ Module.register("bustimes", {
             wrapper.className = "dimmed light small";
             return wrapper;
         }
-        if (!this.departures.length) {
+
+        const timingPointNames = Object.keys(this.departures);
+        timingPointNames.sort();
+
+        if (timingPointNames.length == 0) {
             wrapper.innerHTML = this.translate("noData");
             wrapper.className = "dimmed light small";
             return wrapper;
@@ -142,48 +147,45 @@ Module.register("bustimes", {
             table.appendChild(row);
         }
 
-        var currentTPC = "";
-        var numberOfTimes = 0;
-        var tpcRow;
-        var row = document.createElement("tr");
-        for (var i in this.departures) {
-            var currentDeparture = this.departures[i];
+        for (const timingPointName of timingPointNames) {
+            const timingPoint = this.departures[timingPointName];
 
-            // print the TimingPoint only once as a row
-            if (currentTPC != currentDeparture.TimingPointName) {
-                currentTPC = currentDeparture.TimingPointName;
-                if (this.config.debug)
-                    Log.info(this.name + ": stop " + currentTPC);
-                tpcRow = document.createElement("tr");
-                var cellTpc = document.createElement("td");
-                cellTpc.innerHTML = currentTPC;
-                cellTpc.className = "destinationinfo";
-                if (this.config.displaymode === "large") {
-                    cellTpc.colSpan = 2;
-                } else if (this.config.displaymode === "medium") {
-                    cellTpc.colSpan = 2 + 2 * this.config.departs;
-                } else {
-                    cellTpc.colSpan = 4;
-                }
-                tpcRow.appendChild(cellTpc);
-                table.appendChild(tpcRow);
-                numberOfTimes = 0;
+            if (this.config.debug)
+                Log.info(this.name + ": stop " + timingPointName);
+            var tpcRow = document.createElement("tr");
+            var cellTpc = document.createElement("td");
+            cellTpc.innerHTML = timingPointName;
+            cellTpc.className = "destinationinfo";
+            if (this.config.displaymode === "large") {
+                cellTpc.colSpan = 2;
+            } else if (this.config.displaymode === "medium") {
+                cellTpc.colSpan = 2 + 2 * this.config.departs;
+            } else {
+                cellTpc.colSpan = 4;
             }
+            tpcRow.appendChild(cellTpc);
+            table.appendChild(tpcRow);
 
-            // print only the first three(config) time and line
-            if (numberOfTimes < this.config.departs) {
-                var time = moment(currentDeparture.ExpectedArrivalTime).format(this.config.timeFormat);
+            var row = document.createElement("tr");
+            for (var i in timingPoint) {
+                var departure = timingPoint[i];
+
+                if (i == this.config.departs)
+                    break;
+
+                const time = moment(departure.ExpectedArrivalTime).format(this.config.timeFormat);
+
                 if (this.config.debug)
-                    Log.info(this.name + ": " + currentDeparture.TransportType.toLowerCase() + " " + currentDeparture.LinePublicNumber + " will arrive at: " + time);
+                    Log.info(this.name + ": " + departure.TransportType.toLowerCase() + " " + departure.LinePublicNumber + " will arrive at: " + time);
 
                 var cellLine = document.createElement("td");
-                cellLine.innerHTML = currentDeparture.LinePublicNumber;
-                if (currentDeparture.Destination != null && this.config.showDestination ) {
-                    cellLine.innerHTML += " (" + currentDeparture.Destination + ")";
+                cellLine.innerHTML = departure.LinePublicNumber;
+                if (departure.Destination != null && this.config.showDestination ) {
+                    cellLine.innerHTML += " (" + departure.Destination + ")";
                 }
                 cellLine.className = "lineinfo";
                 if (this.config.displaymode === "small") {
-                    if (numberOfTimes == 0) tpcRow.appendChild(cellLine);
+                    if (i == 0) tpcRow.appendChild(cellLine);
                 } else {
                     row.appendChild(cellLine);
                 }
@@ -192,7 +194,7 @@ Module.register("bustimes", {
                 cellDeparture.innerHTML = time;
                 cellDeparture.className = "timeinfo";
                 if (this.config.displaymode === "small") {
-                    if (numberOfTimes == 0) tpcRow.appendChild(cellDeparture);
+                    if (i == 0) tpcRow.appendChild(cellDeparture);
                 } else {
                     row.appendChild(cellDeparture);
                 }
@@ -207,60 +209,15 @@ Module.register("bustimes", {
 
                 table.appendChild(row);
                 if ((this.config.displaymode === "large") ||
-                    (this.config.departs == numberOfTimes + 1)) {
+                    (this.config.departs == i + 1)) {
                     row = document.createElement("tr");
                 }
             }
-            numberOfTimes++;
 
         }
         wrapper.appendChild(table);
 
         return wrapper;
-    },
-
-    /*
-     * sort the results 1st on tpc, than by date-time
-     */
-    sortDepartures: function(tpc, time) {
-
-        // sort on a String in a array of object like : [(String1, String2, String3, ..)]
-        function dynamicSort(property) {
-            var sortOrder = 1;
-            if (property[0] === "-") {
-                sortOrder = -1;
-                property = property.substr(1);
-            }
-            return function(a, b) {
-                var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
-                return result * sortOrder;
-            }
-        }
-        // sort on a set of string in an array of objects like: [(Sring1, String2, String3, ..)]
-        function dynamicSortMultiple() {
-            /*
-             * save the arguments object as it will be overwritten
-             * note that arguments object is an array-like object
-             * consisting of the names of the properties to sort by
-             */
-            var props = arguments;
-            return function(obj1, obj2) {
-                var i = 0,
-                result = 0,
-                numberOfProperties = props.length;
-                /* try getting a different result from 0 (equal)
-                 * as long as we have extra properties to compare
-                 */
-                while (result === 0 && i < numberOfProperties) {
-                    result = dynamicSort(props[i])(obj1, obj2);
-                    i++;
-                }
-                return result;
-            }
-        }
-
-        // sort on busstop(timingpoint), and time.
-        this.departures.sort(dynamicSortMultiple(tpc, time));
     },
 
     /* processBusTimes(data)
@@ -281,39 +238,46 @@ Module.register("bustimes", {
         if (this.config.debug)
             Log.info(this.name + ": Received data");
 
-        var msg = JSON.parse(data); // converts it to a JS native object.
+        const msg = JSON.parse(data); // converts it to a JS native object.
 
-        this.departures = []; // our object for the Dom
-        for (var i in msg) {
-            var tpc = msg[i];
-            for (var j in tpc) {
-                // only interested in passes (ignoring stop and messages)
-                var passes = tpc[j];
-                if (j == "Passes") {
-                    for (var k in passes) {
-                        var bus = passes[k];
-                        var destination = "DestinationName50" in bus ? bus.DestinationName50 : null;
+        // Data that will be used by DOM - passes per timing point (aggregated
+        // by name, not tpc).
+        this.departures = {}
 
-                        if (this.config.destinations.length > 0 && !this.config.destinations.includes(bus.DestinationCode)) {
-                            if (this.config.debug)
-                                Log.info(this.name + ": Skipped line " + k + " (number " + bus.LinePublicNumber + ") "
-                                + " with destination " + bus.DestinationCode + " (" + (destination != null ? destination : "no name") + ")");
-                            continue;
-                        }
+        // Go over results for each requested tpc (e.g., bus stop). For each tpc
+        // we get info about the stop itself, and all the passes (i.e.,
+        // arrivals/departures of vehicles).
+        for (const {Stop, Passes} of Object.values(msg)) {
+            const timingPointName = Stop.TimingPointName;
+            if (!this.departures[timingPointName])
+                this.departures[timingPointName] = [];
 
-                        this.departures.push({
-                            ExpectedArrivalTime: bus.ExpectedArrivalTime,
-                            TransportType: bus.TransportType,
-                            LinePublicNumber: bus.LinePublicNumber,
-                            TimingPointName: bus.TimingPointName,
-                            Destination: destination,
-                        });
-                    }
+            for (const pass of Object.values(Passes)) {
+                const destination = pass.DestinationName50 || "?";
+
+                if (this.config.destinations.length > 0 &&
+                    !this.config.destinations.includes(pass.DestinationCode)) {
+                    if (this.config.debug)
+                        Log.info(this.name + ": Skipped line (number " + pass.LinePublicNumber + ") "
+                        + " with destination " + pass.DestinationCode + " (" + destination + ")");
+                    continue;
                 }
+
+                this.departures[timingPointName].push({
+                    ExpectedArrivalTime: pass.ExpectedArrivalTime,
+                    TransportType: pass.TransportType,
+                    LinePublicNumber: pass.LinePublicNumber,
+                    TimingPointName: pass.TimingPointName,
+                    Destination: destination,
+                });
             }
         }
 
-        this.sortDepartures("TimingPointName", "ExpectedArrivalTime");
+        // Sort departures by time, per timingpoint.
+        for (const tp in this.departures)
+            this.departures[tp].sort(
+                (obj1, obj2) => obj1["ExpectedArrivalTime"].localeCompare(
+                    obj2["ExpectedArrivalTime"]));
 
         this.loaded = true;
         this.errorMsg = "";
