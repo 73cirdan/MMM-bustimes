@@ -173,7 +173,7 @@ Module.register("bustimes", {
                 if (i == this.config.departs)
                     break;
 
-                const time = moment(departure.ExpectedArrivalTime).format(this.config.timeFormat);
+                const time = moment(departure.ExpectedDepartureTime).format(this.config.timeFormat);
 
                 if (this.config.debug)
                     Log.info(this.name + ": " + departure.TransportType.toLowerCase() + " " + departure.LinePublicNumber + " will arrive at: " + time);
@@ -264,7 +264,7 @@ Module.register("bustimes", {
                 }
 
                 this.departures[timingPointName].push({
-                    ExpectedArrivalTime: pass.ExpectedArrivalTime,
+                    ExpectedDepartureTime: pass.ExpectedDepartureTime,
                     TransportType: pass.TransportType,
                     LinePublicNumber: pass.LinePublicNumber,
                     TimingPointName: pass.TimingPointName,
@@ -276,8 +276,8 @@ Module.register("bustimes", {
         // Sort departures by time, per timingpoint.
         for (const tp in this.departures)
             this.departures[tp].sort(
-                (obj1, obj2) => obj1["ExpectedArrivalTime"].localeCompare(
-                    obj2["ExpectedArrivalTime"]));
+                (obj1, obj2) => obj1["ExpectedDepartureTime"].localeCompare(
+                    obj2["ExpectedDepartureTime"]));
 
         this.loaded = true;
         this.errorMsg = "";
