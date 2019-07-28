@@ -25,7 +25,7 @@ module.exports = NodeHelper.create({
      */
     getData: function() {
         var self = this;
-        var ovUrl = this.config.apiBase + "/" + this.config.tpcEndpoint + "/" + this.config.timepointcode;
+        var ovUrl = this.config.apiBase + "/" + this.config.tpcEndpoint + "/" + this.config.timingPointCode;
 
         request({
             url: ovUrl,
@@ -35,7 +35,7 @@ module.exports = NodeHelper.create({
             if (!error && response.statusCode == 200) {
                 self.sendSocketNotification("RESPONSE", body);
             } else {
-                console.log(self.name + ": Could not load timepoint(s) on url:" + ovUrl);
+                console.log(self.name + ": Could not load timingpoint(s) on url:" + ovUrl);
             }
         });
     },

@@ -54,6 +54,12 @@ Module.register("bustimes", {
             this.config.destinations = [];
         }
 
+        // Preserve backwards compatibly
+        if (this.config.timingPointCode === undefined && this.config.timepointcode) {
+            this.config.timingPointCode = this.config.timepointcode;
+            this.config.timepointcode = undefined;
+        }
+
         this.resume();
         this.requestData();
     },

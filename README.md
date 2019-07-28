@@ -7,9 +7,9 @@ Based on a Dutch public api for public transport. Has three displaymodes as show
 Navigate into your MagicMirror's `modules` folder and execute
  `git clone https://github.com/73cirdan/MMM-bustimes bustimes`
 # Using the module
-## Get your timepointcode
-This module can show one or more bus stops in your neighbourhood using timepoint code.
-A timepoint code is a stop on e.g. a bus or metro line.
+## Get your TimingPointCode
+This module can show one or more bus stops in your neighbourhood using timingpoint code.
+A timingpoint code is a stop on e.g. a bus or metro line.
 (more docs on: https://github.com/skywave/KV78Turbo-OVAPI/wiki/Line )
 
 1. Use: `http://v0.ovapi.nl/line/`
@@ -20,7 +20,7 @@ A timepoint code is a stop on e.g. a bus or metro line.
 1. Use: `http://v0.ovapi.nl/line/[lineid]`
   in a browser to find the line stops and the correct direction.
   replace `[lineid]` with something in the form Operator_linenr_direction.
-  check the timepointcode (tpc) for the stop you want to use.
+  check the timingpointcode (tpc) for the stop you want to use.
   *Based on the example at step 1: `http://v0.ovapi.nl/line/ARR_28167_2`
   we find "TimingPointName":"Alde Leie, Brug","TimingPointCode":"20320110".*
 
@@ -51,7 +51,7 @@ timeFormat | e.q. "HH:mm:ss" or "HH:mm" to control precision of the departure ti
 			position: "top_left",
                 	header: "Bustimes",
 			config: {
-				timepointcode: "20320110,20141200",
+				timingPointCode: "20320110,20141200",
 				displaymode: "small",
 				departs: 3
 			}
