@@ -21,6 +21,8 @@ Module.register("bustimes", {
 
         destinations: null,
 
+        departures: 3,
+
         debug: false
     },
 

@@ -1,61 +1,85 @@
 # bustimes
 Magic Mirror - Dutch bus times
 
-Based on a Dutch public api for public transport. Has three displaymodes as shown in mockup below.
-![call](https://github.com/73cirdan/MMM-bustimes/blob/master/screenshot.png)
+Shows departures of buses, trams, metro's and ferries for any stop in the Netherlands.
+Based on data from OVapi, a public API for Dutch public transport information.
+For train departures you can use the
+[MMM-nstreinen](https://github.com/qistoph/MMM-nstreinen/) module instead (this
+includes trains operated by Arriva, CXX, etc.).
+
+The module supports three different display modes, as shown in screenshot below.
+![Example screenshot](https://github.com/73cirdan/MMM-bustimes/blob/master/screenshot.png)
+
+Specifically, these display modes are:
+ - *small* - Only show a single departure per stop.
+ - *medium* - One stop per row, with multiple departures per row.
+ - *large* - One departure per row (number of rows configurable).
+
+
 # Installation
 Navigate into your MagicMirror's `modules` folder and execute
  `git clone https://github.com/73cirdan/MMM-bustimes bustimes`
+
 # Using the module
+
 ## Get your TimingPointCode
-This module can show one or more bus stops in your neighbourhood using timingpoint code.
-A timingpoint code is a stop on e.g. a bus or metro line.
-(more docs on: https://github.com/skywave/KV78Turbo-OVAPI/wiki/Line )
 
-1. Use: `http://v0.ovapi.nl/line/`
-  in a browser to find your line in all lines.
-  (search the result for your line by city or line number).
-  *First result in the resulting JSON e.g was `ARR_28167_2`.*
+This module can show one or more bus stops in your neighbourhood, which are
+represented using a "TimingPoint" code (tpc). A TimingPoint is a single stop on
+for example a bus or metro line. Note that a TimingPoint is just a single
+platform or quay. Stations and other hubs often have many TimingPoints. Even two
+bus stops on opposite sides of a street will be separate TimingPoints (despite
+both having the same name). "StopAreas" group multiple TimingPoints together
+into logical clusters (e.g., stops on both sides of a street, or a station).
+More information can be found on the
+[OVapi wiki](https://github.com/skywave/KV78Turbo-OVAPI/wiki).
 
-1. Use: `http://v0.ovapi.nl/line/[lineid]`
-  in a browser to find the line stops and the correct direction.
-  replace `[lineid]` with something in the form Operator_linenr_direction.
-  check the timingpointcode (tpc) for the stop you want to use.
-  *Based on the example at step 1: `http://v0.ovapi.nl/line/ARR_28167_2`
-  we find "TimingPointName":"Alde Leie, Brug","TimingPointCode":"20320110".*
+1. Open `http://v0.ovapi.nl/line/` in a browser to find your line in the list of
+   all lines.  You can find your line in the result by searching for a city,
+   line number, or start/end points. Note that most lines will have two entries:
+   one for each direction buses run in.<br>
+   *For example, the first line in the resulting JSON was `ARR_28167_2`: Arriva
+   line 7911 from Stiens to Alde Leie.*
 
-1. Use: `http://v0.ovapi.nl/tpc/[tpc]`
-  and replace `[tpc]` with something in the form of a 8digit number.
-  Mind the change from **line** to **tpc** in the URL.
-  *Based on the example in step 2 use: `http://v0.ovapi.nl/tpc/20320110`.*
-  *Check the result. The passes part should contain busses, trams or boats stopping at this stop. All lines halting at this stop are included. If all looks good, copy the tpc into the config.*
+2. Open `http://v0.ovapi.nl/line/[lineid]` in a browser to check your result
+   (e.g., if it is the correct direction), and to find the line stops.  Replace
+   the `[lineid]` part in the URL with the ID you found in step one (often in
+   the form of `<operator>_<linenr>_<direction>`). Then look through the stops
+   for the one you want to use, and write down the `TimingPointCode` (tpc).<br>
+   *Based on the example in step one: at `http://v0.ovapi.nl/line/ARR_28167_2`
+   we find `"TimingPointName":"Alde Leie, Brug","TimingPointCode":"20320110"`.*
+
+3. Check `http://v0.ovapi.nl/tpc/[tpc]`, where `[tpc]` is the TimingPointCode
+   you found in step 2.  Mind the change from **line** to **tpc** in the URL.
+   The passes part of the result should contain buses, trams or boats stopping
+   at this stop. All lines terminating at this stop are included. If all looks
+   good, copy the tpc into the config.<br>
+   *Based on the example in step two, we get `http://v0.ovapi.nl/tpc/20320110`.*
 
 ## Config options
 
-First Header | Second Header
------------- | -------------
-tpc | Just one tpc or a comma separated list `tpc1,tpc2` if you need more than one departure list
-displaymode | is one of "small", "medium", "large".
-.. | *large* - busline and time per row, display a number of *departs* rows per tpcs.
-.. | *medium* - use <departs> to display a number of *departs* in one row, keep it low like 2 or 3
-.. | *small* - just the next bus, no use of *departs*
-departs | controls how many departs you want to see.
-destinations | Optional, an array with a every destination you care about. Only lines going to any of these destinations will be shown.
-.. | Valid codes can be found in step 3, under the entry 'DestinationCode' of each line.
-showDestination | true or false to see the destination of a line.
-timeFormat | e.q. "HH:mm:ss" or "HH:mm" to control precision of the departure time
+Option | Description
+------ | -----------
+`timingPointCode` | One or more TimingPointCodes. Use a comma separated list (`"tpc1,tpc2"`) if you need more than one departure list.<br>**Required**
+`displaymode` | Layout of the module; see above for example and explanation.<br>*Possible values:* `"small"`, `"medium"`, `"large"`<br>**Required**
+`departs` | How many departures are shown per stop (not used in *small* mode).<br>*Default value:* `3`
+`destinations` | An array with a every destination you care about. Only lines going to any of these destinations will be shown. Valid codes can be found in step 3, under the entry `DestinationCode` of each line.<br>*Default value:* `[]`
+`showDestination` | Whether to show the destination of a line, or just the line number.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
+`timeFormat` | Format of departure times shown. E.g., `"HH:mm:ss"` will include seconds.<br>*Possible values:* any [Moment.js format string](https://momentjs.com/docs/#/displaying/format/)<br>*Default value:* `"HH:mm"`
 
 ## Example config.js content for this module
-		{
-			module: "bustimes",
-			position: "top_left",
-                	header: "Bustimes",
-			config: {
-				timingPointCode: "20320110,20141200",
-				displaymode: "small",
-				departs: 3
-			}
-		},
+```javascript
+    {
+        module: "bustimes",
+        position: "top_left",
+        header: "Bustimes",
+        config: {
+            timingPointCode: "20320110,20141200",
+            displaymode: "medium",
+            departs: 3
+        }
+    },
+```
 
 The MIT License (MIT)
 =====================
