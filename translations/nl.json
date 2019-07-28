@@ -1,5 +1,8 @@
 {
     "noData": "Geen mogelijkheiden",
+    "notSet": "Geen timingPointCode in config",
+    "invalDisplayMode": "displaymode moet small, medium of large zijn",
+    "error": "Er is een fout opgetreden",
     "departure": "Vertrek",
     "line": "Lijn"
 }

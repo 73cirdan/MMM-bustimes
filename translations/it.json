@@ -1,5 +1,8 @@
 {
     "noData": "Nessuna opzione",
+    "notSet": "timingPointCode non impostato in config",
+    "invalDisplayMode": "displaymode deve essere small, medium o large",
+    "error": "Si è verificato un errore",
     "departure": "Partenza",
     "line": "Linea"
 }

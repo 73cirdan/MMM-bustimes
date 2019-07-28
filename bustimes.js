@@ -50,6 +50,8 @@ Module.register("bustimes", {
         // Set locale.
         moment.locale(config.language);
 
+        this.errorMsg = "";
+
         if (!Array.isArray(this.config.destinations)) {
             this.config.destinations = [];
         }
@@ -58,6 +60,18 @@ Module.register("bustimes", {
         if (this.config.timingPointCode === undefined && this.config.timepointcode) {
             this.config.timingPointCode = this.config.timepointcode;
             this.config.timepointcode = undefined;
+        }
+
+        if (!this.config.timingPointCode) {
+            this.errorMsg = this.translate("notSet");
+            this.updateDom();
+            return;
+        }
+
+        if (!["small", "medium", "large"].includes(this.config.displaymode)) {
+            this.errorMsg = this.translate("invalDisplayMode");
+            this.updateDom();
+            return;
         }
 
         this.resume();
@@ -93,6 +107,12 @@ Module.register("bustimes", {
     // Override dom generator.
     getDom: function() {
         var wrapper = document.createElement("div");
+
+        if (this.errorMsg) {
+            wrapper.innerHTML = this.errorMsg;
+            wrapper.className = "dimmed light small";
+            return wrapper;
+        }
 
         if (!this.loaded) {
             wrapper.innerHTML = this.translate("LOADING");
@@ -254,6 +274,7 @@ Module.register("bustimes", {
             // Did not receive usable new data.
             // Maybe this needs a better check?
             Log.error(self.name + ": Could not parse bus times.");
+            this.errorMsg = this.translate("error");
             return;
         }
 
@@ -295,6 +316,7 @@ Module.register("bustimes", {
         this.sortDepartures("TimingPointName", "ExpectedArrivalTime");
 
         this.loaded = true;
+        this.errorMsg = "";
         this.updateDom(this.config.animationSpeed);
     },
 
@@ -302,7 +324,6 @@ Module.register("bustimes", {
      * Asks the node helper to request new data.
      */
     requestData: function() {
-        this.loaded = false;
         this.updateDom();
 
         if (this.config.debug)
@@ -318,6 +339,12 @@ Module.register("bustimes", {
     socketNotificationReceived: function(notification, payload) {
         if (notification === "DATA" && payload.identifier === this.identifier)
             this.processBusTimes(payload.data);
+        if (notification === "ERROR" && payload.identifier === this.identifier) {
+            if (this.config.debug)
+                Log.warn(this.name + ": Error fetching departures: " + payload.error);
+            this.errorMsg = this.translate("error");
+            this.updateDom(this.config.animationSpeed);
+        }
     }
 
 });

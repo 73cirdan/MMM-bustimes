@@ -29,7 +29,12 @@ module.exports = NodeHelper.create({
                     data: body
                 });
             } else {
-                console.log(self.name + ": Could not load timingpoint(s) on url:" + ovUrl);
+                var errorMsg = error ? error : "Status " + response.statusCode;
+                console.log(self.name + ": Could not load timingpoint(s) on url " + ovUrl + ": " + errorMsg);
+                self.sendSocketNotification("ERROR", {
+                    identifier: moduleIdentifier,
+                    error: errorMsg
+                });
             }
         });
     },
