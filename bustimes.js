@@ -24,6 +24,7 @@ Module.register("bustimes", {
 
         departures: 3,
         showOnlyDepartures: true,
+        showDelay: false,
 
         debug: false
     },
@@ -109,6 +110,36 @@ Module.register("bustimes", {
         }
     },
 
+    /*
+     * Returns the departure time as a string. Depending on the config, this may
+     * either be the time itself, or the scheduled time and the expected offset
+     * in minutes.
+     */
+    getDepartureTime: function(departure) {
+        let time = "";
+        if (this.config.showDelay) {
+            const plannedTime = moment(departure.TargetDepartureTime);
+            const liveTime = moment(departure.ExpectedDepartureTime);
+            const timeDiff = moment.duration(liveTime.diff(plannedTime));
+
+            // Round down minutes, to be pessimistic for early buses,
+            // and optimistic for delayed buses (it's better to arrive
+            // early at bus stop, rather than late and miss bus).
+            const minutesDiff = Math.abs(Math.floor(timeDiff.asMinutes()));
+
+            // We take the absolute value of minutes and use a bigger
+            // (clearer) minus(-like) sign for early departures.
+            const sign = liveTime.isBefore(plannedTime) ? "&ndash;" : "+";
+
+            time = plannedTime.format(this.config.timeFormat);
+            if (minutesDiff > 0)
+                time += sign + minutesDiff;
+        } else {
+            time = moment(departure.ExpectedDepartureTime).format(this.config.timeFormat);
+        }
+        return time;
+    },
+
     // Override dom generator.
     getDom: function() {
         var wrapper = document.createElement("div");
@@ -177,10 +208,8 @@ Module.register("bustimes", {
                 if (i == this.config.departs)
                     break;
 
-                const time = moment(departure.ExpectedDepartureTime).format(this.config.timeFormat);
-
                 if (this.config.debug)
-                    Log.info(this.name + ": " + departure.TransportType.toLowerCase() + " " + departure.LinePublicNumber + " will arrive at: " + time);
+                    Log.info(this.name + ": " + departure.TransportType.toLowerCase() + " " + departure.LinePublicNumber + " will arrive at: " + departure.ExpectedDepartureTime);
 
                 var cellLine = document.createElement("td");
                 cellLine.innerHTML = departure.LinePublicNumber;
@@ -195,7 +224,7 @@ Module.register("bustimes", {
                 }
 
                 var cellDeparture = document.createElement("td");
-                cellDeparture.innerHTML = time;
+                cellDeparture.innerHTML = this.getDepartureTime(departure);
                 cellDeparture.className = "timeinfo";
                 if (this.config.displaymode === "small") {
                     if (i == 0) tpcRow.appendChild(cellDeparture);
@@ -268,6 +297,7 @@ Module.register("bustimes", {
                 }
 
                 this.departures[timingPointName].push({
+                    TargetDepartureTime: pass.TargetDepartureTime,
                     ExpectedDepartureTime: pass.ExpectedDepartureTime,
                     TransportType: pass.TransportType,
                     LinePublicNumber: pass.LinePublicNumber,
