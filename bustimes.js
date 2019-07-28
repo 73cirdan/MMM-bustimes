@@ -308,15 +308,16 @@ Module.register("bustimes", {
         if (this.config.debug)
             Log.info(this.name + ": Requested data");
 
-        this.sendSocketNotification('GETDATA', this.config);
+        this.sendSocketNotification('GETDATA', {
+            identifier: this.identifier,
+            config: this.config
+        });
     },
 
 
     socketNotificationReceived: function(notification, payload) {
-        if (notification === "RESPONSE") {
-            this.loaded = true;
-            this.processBusTimes(payload);
-        }
+        if (notification === "DATA" && payload.identifier === this.identifier)
+            this.processBusTimes(payload.data);
     }
 
 });

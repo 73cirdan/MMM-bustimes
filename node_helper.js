@@ -10,30 +10,24 @@
 
 const NodeHelper = require('node_helper');
 var request = require('request');
-var moment = require('moment');
 
 module.exports = NodeHelper.create({
-
-    start: function() {
-        this.running = false;
-        this.config = null;
-    },
-
     /*
-     * Requests new data from openov.nl.
-     * Calls processBusTimes on succesfull response.
+     * Requests new data from ovapi.nl, and forward response to the module.
      */
-    getData: function() {
+    getData: function(moduleIdentifier, config) {
         var self = this;
-        var ovUrl = this.config.apiBase + "/" + this.config.tpcEndpoint + "/" + this.config.timingPointCode;
+        var ovUrl = config.apiBase + "/" + config.tpcEndpoint + "/" + config.timingPointCode;
 
         request({
             url: ovUrl,
             method: 'GET',
         }, function(error, response, body) {
-            self.running = false;
             if (!error && response.statusCode == 200) {
-                self.sendSocketNotification("RESPONSE", body);
+                self.sendSocketNotification("DATA", {
+                    identifier: moduleIdentifier,
+                    data: body
+                });
             } else {
                 console.log(self.name + ": Could not load timingpoint(s) on url:" + ovUrl);
             }
@@ -41,10 +35,7 @@ module.exports = NodeHelper.create({
     },
 
     socketNotificationReceived: function(notification, payload) {
-        if (notification === 'GETDATA' && this.running == false) {
-            this.running = true;
-            this.config = payload;
-            this.getData();
-        }
+        if (notification === 'GETDATA')
+            this.getData(payload.identifier, payload.config);
     }
 });
