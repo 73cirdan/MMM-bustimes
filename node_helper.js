@@ -19,6 +19,9 @@ module.exports = NodeHelper.create({
         var self = this;
         var ovUrl = config.apiBase + "/" + config.tpcEndpoint + "/" + config.timingPointCode;
 
+        if (config.showOnlyDepartures)
+            ovUrl += "/" + config.departuresOnlySuffix;
+
         request({
             url: ovUrl,
             method: 'GET',

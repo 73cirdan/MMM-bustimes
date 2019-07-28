@@ -65,6 +65,7 @@ Option | Description
 `departs` | How many departures are shown per stop (not used in *small* mode).<br>*Default value:* `3`
 `destinations` | An array with a every destination you care about. Only lines going to any of these destinations will be shown. Valid codes can be found in step 3, under the entry `DestinationCode` of each line.<br>*Default value:* `[]`
 `showDestination` | Whether to show the destination of a line, or just the line number.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
+`showOnlyDepartures` | Only show departures from stops. This filters out lines that terminate at a stop, and thus do not let people get in the vehicle.<br>*Possible values:* `true` or `false`<br>*Default value:* `true`
 `timeFormat` | Format of departure times shown. E.g., `"HH:mm:ss"` will include seconds.<br>*Possible values:* any [Moment.js format string](https://momentjs.com/docs/#/displaying/format/)<br>*Default value:* `"HH:mm"`
 
 ## Example config.js content for this module

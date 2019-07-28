@@ -15,6 +15,7 @@ Module.register("bustimes", {
 
         apiBase: "http://v0.ovapi.nl",
         tpcEndpoint: "tpc",
+        departuresOnlySuffix: "departures",
 
         refreshInterval: 5 * 1000 * 60, // refresh every 5 minutes
         timeFormat: "HH:mm",
@@ -22,6 +23,7 @@ Module.register("bustimes", {
         destinations: null,
 
         departures: 3,
+        showOnlyDepartures: true,
 
         debug: false
     },
