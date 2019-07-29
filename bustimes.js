@@ -27,6 +27,15 @@ Module.register("bustimes", {
         showDelay: false,
         showHeader: false,
         alwaysShowStopName: true,
+        showTransportTypeIcon: false,
+
+        transportTypeIcons: {
+            "BUS": "bus",
+            "TRAM": "train",
+            "METRO": "subway",
+            "BOAT": "ship",
+            "default": "question-circle"
+        },
 
         debug: false
     },
@@ -38,7 +47,7 @@ Module.register("bustimes", {
 
     // Define required scripts.
     getStyles: function() {
-        return ["bustimes.css"];
+        return ["bustimes.css", "font-awesome.css"];
     },
 
     // Define required translations.
@@ -159,10 +168,26 @@ Module.register("bustimes", {
     createCell: function(row, content, className, cellType = "td") {
         const cell = document.createElement(cellType);
         row.appendChild(cell);
-        cell.innerHTML = content;
+        if (content)
+            cell.innerHTML = content;
         if (className)
             cell.className = className;
         return cell;
+    },
+
+    createIcon: function(iconName) {
+        const icon = document.createElement("span");
+        icon.className = "fa fa-" + iconName;
+        return icon;
+    },
+
+    createTransportTypeIconCell: function(row, transportType) {
+        const iconName = this.config.transportTypeIcons[transportType] ||
+                       this.config.transportTypeIcons["default"];
+        const icon = this.createIcon(iconName);
+        const cell = this.createCell(row, null, "transporttype");
+        cell.appendChild(icon);
+        return cell
     },
 
     /*
@@ -177,6 +202,8 @@ Module.register("bustimes", {
 
             const row = this.createRow(table);
             this.createCell(row, timingPointName, "stopname");
+            if (this.config.showTransportTypeIcon)
+                this.createTransportTypeIconCell(row, departure.TransportType);
             this.createCell(row, departure.LinePublicNumber, "line");
             this.createCell(row, this.getDepartureTime(departure), "time");
         }
@@ -190,19 +217,23 @@ Module.register("bustimes", {
     createMediumTable: function(timingPointNames) {
         const table = this.createEmptyTable("ovtable-medium");
 
+        const extraCols = this.config.showTransportTypeIcon ? 1 : 0;
+
         for (const timingPointName of timingPointNames) {
             const timingPoint = this.departures[timingPointName];
 
             if (this.config.alwaysShowStopName || timingPointNames.length > 1) {
                 const stopRow = this.createRow(table);
                 const cell = this.createCell(stopRow, timingPointName, "stopname");
-                cell.colSpan = 2 * this.config.departs;
+                cell.colSpan = (2 + extraCols) * this.config.departs;
             }
 
             const row = this.createRow(table);
             for (let i = 0; i < this.config.departs && i in timingPoint; i++) {
                 const departure = timingPoint[i];
 
+                if (this.config.showTransportTypeIcon)
+                    this.createTransportTypeIconCell(row, departure.TransportType);
                 this.createCell(row, departure.LinePublicNumber, "line");
                 this.createCell(row, this.getDepartureTime(departure), "time");
             }
@@ -218,10 +249,12 @@ Module.register("bustimes", {
     createLargeTable: function(timingPointNames) {
         const table = this.createEmptyTable("ovtable-large");
 
+        const extraCols = this.config.showTransportTypeIcon ? 1 : 0;
+
         if (this.config.showHeader) {
             const row = this.createRow(table);
             const cell = this.createCell(row, this.translate("line"), null, "th");
-            cell.colSpan = 2;
+            cell.colSpan = 2 + extraCols;
             this.createCell(row, this.translate("departure"), null, "th");
         }
 
@@ -231,13 +264,15 @@ Module.register("bustimes", {
             if (this.config.alwaysShowStopName || timingPointNames.length > 1) {
                 const stopRow = this.createRow(table);
                 const cell = this.createCell(stopRow, timingPointName, "stopname");
-                cell.colSpan = 3;
+                cell.colSpan = 3 + extraCols;
             }
 
             for (let i = 0; i < this.config.departs && i in timingPoint; i++) {
                 const departure = timingPoint[i];
 
                 const row = this.createRow(table);
+                if (this.config.showTransportTypeIcon)
+                    this.createTransportTypeIconCell(row, departure.TransportType);
                 this.createCell(row, departure.LinePublicNumber, "line");
                 this.createCell(row, departure.Destination, "destination");
                 this.createCell(row, this.getDepartureTime(departure), "time");
