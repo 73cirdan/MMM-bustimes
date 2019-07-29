@@ -26,6 +26,7 @@ Module.register("bustimes", {
         showOnlyDepartures: true,
         showDelay: false,
         showHeader: false,
+        alwaysShowStopName: true,
 
         debug: false
     },
@@ -192,9 +193,11 @@ Module.register("bustimes", {
         for (const timingPointName of timingPointNames) {
             const timingPoint = this.departures[timingPointName];
 
-            const stopRow = this.createRow(table);
-            const cell = this.createCell(stopRow, timingPointName, "stopname");
-            cell.colSpan = 2 * this.config.departs;
+            if (this.config.alwaysShowStopName || timingPointNames.length > 1) {
+                const stopRow = this.createRow(table);
+                const cell = this.createCell(stopRow, timingPointName, "stopname");
+                cell.colSpan = 2 * this.config.departs;
+            }
 
             const row = this.createRow(table);
             for (let i = 0; i < this.config.departs && i in timingPoint; i++) {
@@ -225,9 +228,11 @@ Module.register("bustimes", {
         for (const timingPointName of timingPointNames) {
             const timingPoint = this.departures[timingPointName];
 
-            const stopRow = this.createRow(table);
-            const cell = this.createCell(stopRow, timingPointName, "stopname");
-            cell.colSpan = 3;
+            if (this.config.alwaysShowStopName || timingPointNames.length > 1) {
+                const stopRow = this.createRow(table);
+                const cell = this.createCell(stopRow, timingPointName, "stopname");
+                cell.colSpan = 3;
+            }
 
             for (let i = 0; i < this.config.departs && i in timingPoint; i++) {
                 const departure = timingPoint[i];
