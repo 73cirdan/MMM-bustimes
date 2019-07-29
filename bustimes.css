@@ -33,3 +33,9 @@
     padding: 0px 5px 0px 5px;
     text-align: left;
 }
+
+.bustimes .liveicon {
+    padding-left: 4px;
+    font-size: 40%;
+    transform: rotate(45deg);
+}

@@ -28,6 +28,7 @@ Module.register("bustimes", {
         showHeader: false,
         alwaysShowStopName: true,
         showTransportTypeIcon: false,
+        showLiveIcon: false,
 
         transportTypeIcons: {
             "BUS": "bus",
@@ -191,6 +192,21 @@ Module.register("bustimes", {
     },
 
     /*
+     * Create an icon representing the shown info is live if the info has been
+     * updated in the last 10 minutes.
+     */
+    createLiveIcon: function(container, lastUpdateTimeStamp) {
+        const lastUpdate = moment(lastUpdateTimeStamp);
+        const now = moment();
+        const timeSinceLastUpdate = moment.duration(now.diff(lastUpdate));
+        if (timeSinceLastUpdate.asMinutes() < 10) {
+            const icon = this.createIcon("wifi");
+            icon.className += " liveicon";
+            container.appendChild(icon);
+        }
+    },
+
+    /*
      * Create the small table for departures, with a single row per stop,
      * showing the earliest departure from that stop.
      */
@@ -201,11 +217,14 @@ Module.register("bustimes", {
             const departure = this.departures[timingPointName][0];
 
             const row = this.createRow(table);
-            this.createCell(row, timingPointName, "stopname");
+            const stop = this.createCell(row, timingPointName, "stopname");
             if (this.config.showTransportTypeIcon)
                 this.createTransportTypeIconCell(row, departure.TransportType);
             this.createCell(row, departure.LinePublicNumber, "line");
             this.createCell(row, this.getDepartureTime(departure), "time");
+
+            if (this.config.showLiveIcon)
+                this.createLiveIcon(stop, departure.LastUpdateTimeStamp);
         }
         return table;
     },
@@ -273,9 +292,12 @@ Module.register("bustimes", {
                 const row = this.createRow(table);
                 if (this.config.showTransportTypeIcon)
                     this.createTransportTypeIconCell(row, departure.TransportType);
-                this.createCell(row, departure.LinePublicNumber, "line");
-                this.createCell(row, departure.Destination, "destination");
-                this.createCell(row, this.getDepartureTime(departure), "time");
+                const line = this.createCell(row, departure.LinePublicNumber, "line");
+                const dest = this.createCell(row, departure.Destination, "destination");
+                const time = this.createCell(row, this.getDepartureTime(departure), "time");
+
+                if (this.config.showLiveIcon)
+                    this.createLiveIcon(dest, departure.LastUpdateTimeStamp);
             }
         }
         return table;
@@ -372,6 +394,7 @@ Module.register("bustimes", {
                     TransportType: pass.TransportType,
                     LinePublicNumber: pass.LinePublicNumber,
                     TimingPointName: pass.TimingPointName,
+                    LastUpdateTimeStamp: pass.LastUpdateTimeStamp,
                     Destination: destination,
                 });
             }
