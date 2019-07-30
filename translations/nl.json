@@ -1,6 +1,6 @@
 {
     "noData": "Geen mogelijkheiden",
-    "notSet": "Geen timingPointCode in config",
+    "notSet": "Geen timingPointCode of stopAreaCode in config",
     "invalDisplayMode": "displaymode moet small, medium of large zijn",
     "error": "Er is een fout opgetreden",
     "departure": "Vertrek",

@@ -14,7 +14,8 @@ Module.register("bustimes", {
         animationSpeed: 1000,
 
         apiBase: "http://v0.ovapi.nl",
-        tpcEndpoint: "tpc",
+        timingPointEndpoint: "tpc",
+        stopAreaEndpoint: "stopareacode",
         departuresOnlySuffix: "departures",
 
         refreshInterval: 5 * 1000 * 60, // refresh every 5 minutes
@@ -80,7 +81,7 @@ Module.register("bustimes", {
             this.config.timepointcode = undefined;
         }
 
-        if (!this.config.timingPointCode) {
+        if (!this.config.timingPointCode && !this.config.stopAreaCode) {
             this.errorMsg = this.translate("notSet");
             this.updateDom();
             return;
@@ -345,78 +346,10 @@ Module.register("bustimes", {
         return wrapper;
     },
 
-    /* processBusTimes(data)
-     * Uses the received data to set the various values.
-     *
-     * argument data object - bus stop information received from OVapi
-     */
-    processBusTimes: function(data) {
-
-        if (!data) {
-            // Did not receive usable new data.
-            // Maybe this needs a better check?
-            Log.error(self.name + ": Could not parse bus times.");
-            this.errorMsg = this.translate("error");
-            return;
-        }
-
-        if (this.config.debug)
-            Log.info(this.name + ": Received data");
-
-        const msg = JSON.parse(data); // converts it to a JS native object.
-
-        // Data that will be used by DOM - passes per timing point (aggregated
-        // by name, not tpc).
-        this.departures = {}
-
-        // Go over results for each requested tpc (e.g., bus stop). For each tpc
-        // we get info about the stop itself, and all the passes (i.e.,
-        // arrivals/departures of vehicles).
-        for (const {Stop, Passes} of Object.values(msg)) {
-            const timingPointName = Stop.TimingPointName;
-            if (!this.departures[timingPointName])
-                this.departures[timingPointName] = [];
-
-            for (const pass of Object.values(Passes)) {
-                const destination = pass.DestinationName50 || "?";
-
-                if (this.config.destinations.length > 0 &&
-                    !this.config.destinations.includes(pass.DestinationCode)) {
-                    if (this.config.debug)
-                        Log.info(this.name + ": Skipped line (number " + pass.LinePublicNumber + ") "
-                        + " with destination " + pass.DestinationCode + " (" + destination + ")");
-                    continue;
-                }
-
-                this.departures[timingPointName].push({
-                    TargetDepartureTime: pass.TargetDepartureTime,
-                    ExpectedDepartureTime: pass.ExpectedDepartureTime,
-                    TransportType: pass.TransportType,
-                    LinePublicNumber: pass.LinePublicNumber,
-                    TimingPointName: pass.TimingPointName,
-                    LastUpdateTimeStamp: pass.LastUpdateTimeStamp,
-                    Destination: destination,
-                });
-            }
-        }
-
-        // Sort departures by time, per timingpoint.
-        for (const tp in this.departures)
-            this.departures[tp].sort(
-                (obj1, obj2) => obj1["ExpectedDepartureTime"].localeCompare(
-                    obj2["ExpectedDepartureTime"]));
-
-        this.loaded = true;
-        this.errorMsg = "";
-        this.updateDom(this.config.animationSpeed);
-    },
-
     /*
      * Asks the node helper to request new data.
      */
     requestData: function() {
-        this.updateDom();
-
         if (this.config.debug)
             Log.info(this.name + ": Requested data");
 
@@ -426,10 +359,14 @@ Module.register("bustimes", {
         });
     },
 
-
     socketNotificationReceived: function(notification, payload) {
-        if (notification === "DATA" && payload.identifier === this.identifier)
-            this.processBusTimes(payload.data);
+        if (notification === "DATA" && payload.identifier === this.identifier) {
+            this.departures = payload.data;
+            this.loaded = true;
+            this.errorMsg = "";
+            this.updateDom(this.config.animationSpeed);
+        }
+
         if (notification === "ERROR" && payload.identifier === this.identifier) {
             if (this.config.debug)
                 Log.warn(this.name + ": Error fetching departures: " + payload.error);

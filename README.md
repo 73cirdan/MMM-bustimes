@@ -22,15 +22,16 @@ Navigate into your MagicMirror's `modules` folder and execute
 
 # Using the module
 
-## Get your TimingPointCode
+## Get your TimingPointCode or StopAreaCode
 
 This module can show one or more bus stops in your neighbourhood, which are
-represented using a "TimingPoint" code (tpc). A TimingPoint is a single stop on
-for example a bus or metro line. Note that a TimingPoint is just a single
-platform or quay. Stations and other hubs often have many TimingPoints. Even two
-bus stops on opposite sides of a street will be separate TimingPoints (despite
-both having the same name). "StopAreas" group multiple TimingPoints together
-into logical clusters (e.g., stops on both sides of a street, or a station).
+represented by a "TimingPoint" code (tpc) or "StopArea" code. A TimingPoint is
+a single stop on for example a bus or metro line. Note that a TimingPoint is
+just a single platform or quay. Stations and other hubs often have many
+TimingPoints. Even two bus stops on opposite sides of a street will be separate
+TimingPoints (despite both having the same name). A "StopArea" groups multiple
+TimingPoints together into logical clusters (e.g., stops on both sides of
+a street, or a station). This module supports both.
 More information can be found on the
 [OVapi wiki](https://github.com/skywave/KV78Turbo-OVAPI/wiki).
 
@@ -45,22 +46,33 @@ More information can be found on the
    (e.g., if it is the correct direction), and to find the line stops.  Replace
    the `[lineid]` part in the URL with the ID you found in step one (often in
    the form of `<operator>_<linenr>_<direction>`). Then look through the stops
-   for the one you want to use, and write down the `TimingPointCode` (tpc).<br>
+   for the one you want to use, and write down the `TimingPointCode` or
+   `StopAreaCode`.<br>
    *Based on the example in step one: at `http://v0.ovapi.nl/line/ARR_28167_2`
-   we find `"TimingPointName":"Alde Leie, Brug","TimingPointCode":"20320110"`.*
+   we find `"TimingPointName":"Alde Leie,Brug","TimingPointCode":"20320110","StopAreaCode":"OliBru"`.*
 
-3. Check `http://v0.ovapi.nl/tpc/[tpc]`, where `[tpc]` is the TimingPointCode
-   you found in step 2.  Mind the change from **line** to **tpc** in the URL.
-   The passes part of the result should contain buses, trams or boats stopping
-   at this stop. All lines terminating at this stop are included. If all looks
-   good, copy the tpc into the config.<br>
-   *Based on the example in step two, we get `http://v0.ovapi.nl/tpc/20320110`.*
+3. Check the result, depending on whether you choose to use a TimingPoint or
+   StopArea:
+   - **TimingPointCode:** Check `http://v0.ovapi.nl/tpc/[tpc]`, where `[tpc]` is
+     the TimingPointCode you found in step 2. Mind the change from *line* to
+     *tpc* in the URL. The passes part of the result should contain buses,
+     trams or boats stopping at this stop. All lines terminating at this stop
+     are included. If all looks good, copy the tpc into the config.<br>
+     *Based on the example in step two, we get `http://v0.ovapi.nl/tpc/20320110`.*
+   - **StopAreaCode:** Check `http://v0.ovapi.nl/stopareacode/[sac]`, where
+     `[sac]` is the StopAreaCode you found in step 2. Mind the change from
+     *line* to *stopareacode* in the URL. The passes part of the result
+     should contain buses, trams or boats stopping at this stop. All lines
+     terminating at this stop are included. If all looks good, copy the tpc into
+     the config.<br>
+     *Based on the example in step two, we get `http://v0.ovapi.nl/stopareacode/OliBru`.*
 
 ## Config options
 
 Option | Description
 ------ | -----------
-`timingPointCode` | One or more TimingPointCodes. Use a comma separated list (`"tpc1,tpc2"`) if you need more than one departure list.<br>**Required**
+`timingPointCode` | One or more TimingPointCodes. Use a comma separated list (`"code1,code2"`) if you need more than one departure list. When `stopAreaCode` is also set, results are combined.<br>**At least one of `timingPointCode` or `stopAreaCode` is required**
+`stopAreaCode` | One or more StopAreaCodes. Use a comma separated list (`"code1,code2"`) if you need more than one departure list. When `timingPointCode` is also set, results are combined.<br>**At least one of `timingPointCode` or `stopAreaCode` is required**
 `displaymode` | Layout of the module; see above for example and explanation.<br>*Possible values:* `"small"`, `"medium"`, `"large"`<br>**Required**
 `departs` | How many departures are shown per stop (not used in *small* mode).<br>*Default value:* `3`
 `destinations` | An array with a every destination you care about. Only lines going to any of these destinations will be shown. Valid codes can be found in step 3, under the entry `DestinationCode` of each line.<br>*Default value:* `[]`
