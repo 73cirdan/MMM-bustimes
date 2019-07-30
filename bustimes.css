@@ -2,6 +2,17 @@
     text-align: center;
 }
 
+.bustimes .ovtable-small .stopname {
+    text-align: left;
+}
+.bustimes .ovtable-large .stopname {
+    text-align: center;
+    font-weight: 400;
+}
+.bustimes .ovtable-large tr:not(:first-child) td.stopname {
+    padding-top: 5px;
+}
+
 .bustimes .transporttype {
     text-align: right;
     padding: 0;
