@@ -1,27 +1,19 @@
-.delay {
-    color: #FF0000;
+.bustimes th {
+    text-align: center;
 }
 
-.ovheader {
-    text-align: left;
-}
-
-.ovheader_r {
-    text-align: right;
-}
-
-.lineinfo {
+.bustimes .line {
     text-align: right;
     padding: 0px 5px 0px 5px;
 }
 
-.timeinfo {
+.bustimes .time {
     padding: 0px 5px 0px 5px;
     text-align: left;
     text-overflow: ellipsis;
 }
 
-.destinationinfo {
+.bustimes .destination {
     padding: 0px 5px 0px 5px;
     text-align: left;
 }

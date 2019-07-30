@@ -25,6 +25,7 @@ Module.register("bustimes", {
         departures: 3,
         showOnlyDepartures: true,
         showDelay: false,
+        showHeader: false,
 
         debug: false
     },
@@ -140,116 +141,145 @@ Module.register("bustimes", {
         return time;
     },
 
-    // Override dom generator.
-    getDom: function() {
-        var wrapper = document.createElement("div");
-
-        if (this.errorMsg) {
-            wrapper.innerHTML = this.errorMsg;
-            wrapper.className = "dimmed light small";
-            return wrapper;
-        }
-
-        if (!this.loaded) {
-            wrapper.innerHTML = this.translate("LOADING");
-            wrapper.className = "dimmed light small";
-            return wrapper;
-        }
-
-        const timingPointNames = Object.keys(this.departures);
-        timingPointNames.sort();
-
-        if (timingPointNames.length == 0) {
-            wrapper.innerHTML = this.translate("noData");
-            wrapper.className = "dimmed light small";
-            return wrapper;
-        }
-
-        var table = document.createElement("table");
-        table.id = "ovtable";
+    createEmptyTable: function(className) {
+        const table = document.createElement("table");
         table.className = "small thin light";
+        if (className)
+            table.className += " " + className;
+        return table;
+    },
 
-        if (this.config.displaymode === "large") {
-            var row = document.createElement("tr");
-            var lineHeader = document.createElement("th");
-            lineHeader.innerHTML = this.translate("line");
-            lineHeader.className = "ovheader_r";
-            row.appendChild(lineHeader);
-            var timeHeader = document.createElement("th");
-            timeHeader.innerHTML = this.translate("departure");
-            timeHeader.className = "ovheader";
-            row.appendChild(timeHeader);
-            table.appendChild(row);
+    createRow: function(table) {
+        const row = document.createElement("tr");
+        table.appendChild(row);
+        return row;
+    },
+
+    createCell: function(row, content, className, cellType = "td") {
+        const cell = document.createElement(cellType);
+        row.appendChild(cell);
+        cell.innerHTML = content;
+        if (className)
+            cell.className = className;
+        return cell;
+    },
+
+    /*
+     * Create the small table for departures, with a single row per stop,
+     * showing the earliest departure from that stop.
+     */
+    createSmallTable: function(timingPointNames) {
+        const table = this.createEmptyTable("ovtable-small");
+
+        for (const timingPointName of timingPointNames) {
+            const departure = this.departures[timingPointName][0];
+
+            const row = this.createRow(table);
+            this.createCell(row, timingPointName, "stopname");
+            this.createCell(row, departure.LinePublicNumber, "line");
+            this.createCell(row, this.getDepartureTime(departure), "time");
+        }
+        return table;
+    },
+
+    /*
+     * Create the medium table for departures, with two rows per stop, one
+     * showing the stop name and the second showing N upcoming departures.
+     */
+    createMediumTable: function(timingPointNames) {
+        const table = this.createEmptyTable("ovtable-medium");
+
+        for (const timingPointName of timingPointNames) {
+            const timingPoint = this.departures[timingPointName];
+
+            const stopRow = this.createRow(table);
+            const cell = this.createCell(stopRow, timingPointName, "stopname");
+            cell.colSpan = 2 * this.config.departs;
+
+            const row = this.createRow(table);
+            for (let i = 0; i < this.config.departs && i in timingPoint; i++) {
+                const departure = timingPoint[i];
+
+                this.createCell(row, departure.LinePublicNumber, "line");
+                this.createCell(row, this.getDepartureTime(departure), "time");
+            }
+        }
+        return table;
+    },
+
+    /*
+     * Create the large table for departures, with N upcoming departures per
+     * stop, each on their own row, including additional information such as the
+     * destination.
+     */
+    createLargeTable: function(timingPointNames) {
+        const table = this.createEmptyTable("ovtable-large");
+
+        if (this.config.showHeader) {
+            const row = this.createRow(table);
+            const cell = this.createCell(row, this.translate("line"), null, "th");
+            cell.colSpan = 2;
+            this.createCell(row, this.translate("departure"), null, "th");
         }
 
         for (const timingPointName of timingPointNames) {
             const timingPoint = this.departures[timingPointName];
 
-            if (this.config.debug)
-                Log.info(this.name + ": stop " + timingPointName);
-            var tpcRow = document.createElement("tr");
-            var cellTpc = document.createElement("td");
-            cellTpc.innerHTML = timingPointName;
-            cellTpc.className = "destinationinfo";
-            if (this.config.displaymode === "large") {
-                cellTpc.colSpan = 2;
-            } else if (this.config.displaymode === "medium") {
-                cellTpc.colSpan = 2 + 2 * this.config.departs;
-            } else {
-                cellTpc.colSpan = 4;
+            const stopRow = this.createRow(table);
+            const cell = this.createCell(stopRow, timingPointName, "stopname");
+            cell.colSpan = 3;
+
+            for (let i = 0; i < this.config.departs && i in timingPoint; i++) {
+                const departure = timingPoint[i];
+
+                const row = this.createRow(table);
+                this.createCell(row, departure.LinePublicNumber, "line");
+                this.createCell(row, departure.Destination, "destination");
+                this.createCell(row, this.getDepartureTime(departure), "time");
             }
-            tpcRow.appendChild(cellTpc);
-            table.appendChild(tpcRow);
-
-            var row = document.createElement("tr");
-            for (var i in timingPoint) {
-                var departure = timingPoint[i];
-
-                if (i == this.config.departs)
-                    break;
-
-                if (this.config.debug)
-                    Log.info(this.name + ": " + departure.TransportType.toLowerCase() + " " + departure.LinePublicNumber + " will arrive at: " + departure.ExpectedDepartureTime);
-
-                var cellLine = document.createElement("td");
-                cellLine.innerHTML = departure.LinePublicNumber;
-                if (departure.Destination != null && this.config.showDestination ) {
-                    cellLine.innerHTML += " (" + departure.Destination + ")";
-                }
-                cellLine.className = "lineinfo";
-                if (this.config.displaymode === "small") {
-                    if (i == 0) tpcRow.appendChild(cellLine);
-                } else {
-                    row.appendChild(cellLine);
-                }
-
-                var cellDeparture = document.createElement("td");
-                cellDeparture.innerHTML = this.getDepartureTime(departure);
-                cellDeparture.className = "timeinfo";
-                if (this.config.displaymode === "small") {
-                    if (i == 0) tpcRow.appendChild(cellDeparture);
-                } else {
-                    row.appendChild(cellDeparture);
-                }
-
-                //var cellTransport = document.createElement("td");
-                //cellTransport.className = "timeinfo";
-                //var symbolTransportation = document.createElement("span");
-                //symbolTransportation.className = this.config.iconTable[currentDeparture.transportation];
-                //cellTransport.appendChild(symbolTransportation);
-                //row.appendChild(cellTransport);
-
-
-                table.appendChild(row);
-                if ((this.config.displaymode === "large") ||
-                    (this.config.departs == i + 1)) {
-                    row = document.createElement("tr");
-                }
-            }
-
         }
-        wrapper.appendChild(table);
+        return table;
+    },
 
+    /*
+     * Returns a DOM object that shows the given message.
+     */
+    createMessage: function(message) {
+        const div = document.createElement("div");
+        div.innerHTML = message;
+        div.className = "dimmed light small";
+        return div;
+    },
+
+    /*
+     * Constructs the content to be shown for this module. This will either be
+     * a message (e.g., an error), or a table corresponding to the display mode.
+     */
+    createContent: function() {
+        if (this.errorMsg)
+            return this.createMessage(this.errorMsg);
+        if (!this.loaded)
+            return this.createMessage(this.translate("LOADING"));
+
+        const timingPointNames = Object.keys(this.departures);
+        timingPointNames.sort();
+
+        if (timingPointNames.length == 0)
+            return this.createMessage(this.translate("noData"));
+
+        const tableCreators = {
+            small: this.createSmallTable,
+            medium: this.createMediumTable,
+            large: this.createLargeTable,
+        };
+        return tableCreators[this.config.displaymode].call(this, timingPointNames);
+    },
+
+    // Override dom generator.
+    getDom: function() {
+        const wrapper = document.createElement("div");
+        wrapper.className = "bustimes";
+        wrapper.appendChild(this.createContent());
         return wrapper;
     },
 

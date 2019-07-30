@@ -64,9 +64,9 @@ Option | Description
 `displaymode` | Layout of the module; see above for example and explanation.<br>*Possible values:* `"small"`, `"medium"`, `"large"`<br>**Required**
 `departs` | How many departures are shown per stop (not used in *small* mode).<br>*Default value:* `3`
 `destinations` | An array with a every destination you care about. Only lines going to any of these destinations will be shown. Valid codes can be found in step 3, under the entry `DestinationCode` of each line.<br>*Default value:* `[]`
-`showDestination` | Whether to show the destination of a line, or just the line number.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `showOnlyDepartures` | Only show departures from stops. This filters out lines that terminate at a stop, and thus do not let people get in the vehicle.<br>*Possible values:* `true` or `false`<br>*Default value:* `true`
 `showDelay` | Show departure times as scheduled times and an offset in case of a delay (or early departure). E.g., display "14:57+5" instead of "15:02".<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
+`showHeader` | Show a header with column names for the *large* display mode.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `timeFormat` | Format of departure times shown. E.g., `"HH:mm:ss"` will include seconds.<br>*Possible values:* any [Moment.js format string](https://momentjs.com/docs/#/displaying/format/)<br>*Default value:* `"HH:mm"`
 
 ## Example config.js content for this module
