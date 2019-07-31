@@ -61,14 +61,16 @@ module.exports = NodeHelper.create({
      * Process received data, with info per TimingPoint, into a list of departures per
      * stop, where TimingPoints are aggregated based on their name.
      */
-    processData: function(data, destinationFilter, debug) {
+    processData: function(data, destinationFilter, includeTownName, debug) {
         const departures = {};
 
         // Go over results for each requested tpc (e.g., bus stop). For each tpc
         // we get info about the stop itself, and all the passes (i.e.,
         // arrivals/departures of vehicles).
         for (const {Stop, Passes} of Object.values(data)) {
-            const timingPointName = Stop.TimingPointName;
+            const timingPointName = includeTownName ?
+                Stop.TimingPointTown + ", " + Stop.TimingPointName :
+                Stop.TimingPointName;
 
             if (!departures[timingPointName])
                 departures[timingPointName] = [];
@@ -123,7 +125,7 @@ module.exports = NodeHelper.create({
             this.mergeData(timingPointData, stopAreaData)
         )
         .then(data =>
-            this.processData(data, config.destinations, config.debug)
+            this.processData(data, config.destinations, config.showTownName, config.debug)
         )
         .then(data =>
             this.sendSocketNotification("DATA", {

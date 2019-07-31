@@ -24,6 +24,7 @@ Module.register("bustimes", {
         destinations: null,
 
         departures: 3,
+        showTownName: false,
         showOnlyDepartures: true,
         showDelay: false,
         showHeader: false,

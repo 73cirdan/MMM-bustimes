@@ -76,6 +76,7 @@ Option | Description
 `displaymode` | Layout of the module; see above for example and explanation.<br>*Possible values:* `"small"`, `"medium"`, `"large"`<br>**Required**
 `departs` | How many departures are shown per stop (not used in *small* mode).<br>*Default value:* `3`
 `destinations` | An array with a every destination you care about. Only lines going to any of these destinations will be shown. Valid codes can be found in step 3, under the entry `DestinationCode` of each line.<br>*Default value:* `[]`
+`showTownName` | Include the town's name in the stop's name. This is especially useful for stops in small villages, e.g., "Alde Leie, Brug" instead of just "Brug".<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `showOnlyDepartures` | Only show departures from stops. This filters out lines that terminate at a stop, and thus do not let people get in the vehicle.<br>*Possible values:* `true` or `false`<br>*Default value:* `true`
 `showDelay` | Show departure times as scheduled times and an offset in case of a delay (or early departure). E.g., display "14:57+5" instead of "15:02".<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `showTransportTypeIcon` | Show an icon representing the transport type (bus, ferry, metro or tram) next to departures.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
@@ -93,6 +94,7 @@ Option | Description
         config: {
             timingPointCode: "20320110,20141200",
             displaymode: "medium",
+            showTownName: true,
             departs: 3
         }
     },
