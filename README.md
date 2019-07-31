@@ -15,6 +15,10 @@ Specifically, these display modes are:
  - *medium* - One stop per row, with multiple departures per row.
  - *large* - One departure per row (number of rows configurable).
 
+The module instances on the right in the screenshot show some optional
+additional display options. Please see the list of supported configuration
+options below for all available options.
+
 
 # Installation
 Navigate into your MagicMirror's `modules` folder and execute
