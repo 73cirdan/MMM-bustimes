@@ -5,6 +5,9 @@
 .bustimes .ovtable-small .stopname {
     text-align: left;
 }
+.bustimes .ovtable-medium .stopname {
+    text-align: left;
+}
 .bustimes .ovtable-large .stopname {
     text-align: center;
     font-weight: 400;
@@ -17,6 +20,11 @@
     text-align: right;
     padding: 0px 2px 0px 2px;
     font-size: 80%;
+}
+.bustimes .timingpointtype {
+    text-align: right;
+    padding: 0px 2px 0px 2px;
+    font-size: 120%;
 }
 .bustimes .ovtable-large .transporttype {
     text-align: center;
