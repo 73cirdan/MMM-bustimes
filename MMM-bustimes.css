@@ -1,11 +1,12 @@
-/*.bustimes table, th, td {
+.bustimes table, .bustimes th, .bustimes td {
     border: 2px solid white;
-}*/
+}
 .bustimes th {
     text-align: center;
 }
 .bustimes .ovtable-small .stopname {
     text-align: left;
+    padding-right: 5px;
 }
 .bustimes .ovtable-medium .stopname {
     text-align: left;
@@ -14,7 +15,6 @@
     text-align: center;
     font-weight: 400;
     font-size: 120%;
-    padding-left: 2px;
 }
 .bustimes .ovtable-large .time {
     font-weight: 400;
@@ -24,11 +24,11 @@
     padding-top: 5px;
 }
 .bustimes .transporttype {
-    text-align: right;
-    padding: 0px 2px 0px 2px;
+    width: 5px;
+    text-align: left;
     font-size: 80%;
 }
-.bustimes .timingpointtype {
+/*.bustimes .timingpointtype {
     text-align: right;
     padding: 0px 2px 0px 2px;
     font-size: 80%;
@@ -36,13 +36,14 @@
 .bustimes .ovtable-large .timingpointtype {
     text-align: center;
     font-size: 120%;
-}   
+}*/   
 .bustimes .ovtable-large .transporttype {
+    width: +5px;
     text-align: center;
     padding-right: 5px;
 }
 .bustimes .ovtable-medium .transporttype:not(:first-child) {
-    padding-left: 10px;
+    padding-left: 5px;
 }
 .bustimes .line {
     text-align: right;
@@ -50,6 +51,8 @@
     font-weight: 900;
 }
 .bustimes .ovtable-medium .line {
+    width: 5px;
+    text-align: left;
     padding-left: 5px;
 }
 .bustimes .time {
@@ -65,4 +68,10 @@
     padding-left: 4px;
     font-size: 40%;
     transform: rotate(45deg);
+}
+.bustimes .timingpointicon {
+    padding: 0px 5px 0px 0px;
+}
+.bustimes .ovtable-large .timingpointicon {
+    padding-left: 5px;
 }
