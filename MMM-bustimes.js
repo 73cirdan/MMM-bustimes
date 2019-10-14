@@ -211,6 +211,20 @@ Module.register("MMM-bustimes", {
         return cell
     },
 
+    createTimingPointIcon: function(container, timingPointType) {
+        const iconName = this.config.timingpointTypeIcons[timingPointType] ||
+                       this.config.timingpointTypeIcons["default"];
+        const icon = this.createIcon(iconName);
+        icon.className += " timingpointicon";
+//        container.appendChild(icon);
+        const lastchild = container.lastChild;
+        container.insertBefore(icon, lastchild);
+//        var newNode = document.createElement("span");
+//        var parentDiv = document.getElementById("childElement").parentNode;
+//        var sp2 = document.getElementById("childElement");
+//        parentDiv.insertBefore(newNode, sp2);
+     },
+
     /*
      * Create an icon representing the shown info is live if the info has been
      * updated in the last 10 minutes.
@@ -259,7 +273,6 @@ Module.register("MMM-bustimes", {
         const table = this.createEmptyTable("ovtable-medium");
 
         const extraCols = this.config.showTransportTypeIcon ? 1 : 0;
-        const extraSpace =  this.config.showTimingPointIcon ? "\u00A0" : "";
 
         for (const timingPointName of timingPointNames) {
             const timingPoint = this.departures[timingPointName];
@@ -268,7 +281,7 @@ Module.register("MMM-bustimes", {
                 const stopRow = this.createRow(table);
                 if (this.config.showTimingPointIcon)
                     this.createTimingPointTypeIconCell(stopRow, "default");
-                const cell = this.createCell(stopRow, extraSpace + timingPointName, "stopname");
+                const cell = this.createCell(stopRow, timingPointName, "stopname");
                 cell.colSpan = (2 + extraCols) * this.config.departs;
             }
 
@@ -294,11 +307,12 @@ Module.register("MMM-bustimes", {
         const table = this.createEmptyTable("ovtable-large");
 
         const extraCols = this.config.showTransportTypeIcon ? 1 : 0;
+        const extraCols2 = this.config.showTimingPointIcon ? 1 : 0;
 
         if (this.config.showHeader) {
             const row = this.createRow(table);
             const cell = this.createCell(row, this.translate("line"), null, "th");
-            cell.colSpan = 2 + extraCols;
+            cell.colSpan = 3 + extraCols;
             this.createCell(row, this.translate("departure"), null, "th");
         }
 
@@ -307,9 +321,13 @@ Module.register("MMM-bustimes", {
 
             if (this.config.alwaysShowStopName || timingPointNames.length > 1) {
                 const stopRow = this.createRow(table);
-                if (this.config.showTimingPointIcon)
-                    this.createTimingPointTypeIconCell(stopRow, "default");
+//                if (this.config.showTimingPointIcon) {
+//                    const cell = this.createTimingPointTypeIconCell(stopRow, "default");
+//                    cell.colSpan = 3 + extraCols;
+//                }
                 const cell = this.createCell(stopRow, timingPointName, "stopname");
+                if (this.config.showTimingPointIcon)
+                    this.createTimingPointIcon(cell, "default");
                 cell.colSpan = 3 + extraCols;
             }
 
