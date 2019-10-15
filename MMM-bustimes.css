@@ -75,3 +75,7 @@
 .bustimes .ovtable-large .timingpointicon {
     padding-left: 5px;
 }
+.bustimes .accessibilityicon {
+    font-size: 60%;
+    vertical-align: super;
+}

@@ -203,7 +203,7 @@ Module.register("MMM-bustimes", {
         return cell
     },
 
-    createTimingPointTypeIconCell: function(row, timingPointType) {
+/*    createTimingPointTypeIconCell: function(row, timingPointType) {
         const iconName = this.config.timingpointTypeIcons[timingPointType] ||
                        this.config.timingpointTypeIcons["default"];
         const icon = this.createIcon(iconName);
@@ -211,12 +211,12 @@ Module.register("MMM-bustimes", {
         cell.appendChild(icon);
         return cell
     },
-
+*/
     createTimingPointIcon: function(container, timingPointType) {
         const iconName = this.config.timingpointTypeIcons[timingPointType] ||
                        this.config.timingpointTypeIcons["default"];
         const icon = this.createIcon(iconName);
-        icon.className += " timingpointicon";
+        icon.className += (timingPointType == "default") ? " timingpointicon" : " accessibilityicon";
         const lastchild = container.lastChild;
         container.insertBefore(icon, lastchild);
      },
