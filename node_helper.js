@@ -72,6 +72,9 @@ module.exports = NodeHelper.create({
                 Stop.TimingPointTown + ", " + Stop.TimingPointName :
                 Stop.TimingPointName;
 
+            const timingPointWheelChairAccessible = (Stop.TimingPointWheelChairAccessible == "ACCESSIBLE") ? 1 : 0;
+            const timingPointVisualAccessible = (Stop.TimingPointVisualAccessible == "ACCESSIBLE") ? 1 : 0;
+
             if (!departures[timingPointName])
                 departures[timingPointName] = [];
 
@@ -86,12 +89,17 @@ module.exports = NodeHelper.create({
                     continue;
                 }
 
+                const wheelchairAccessible = (pass.WheelChairAccessible == "ACCESSIBLE") ? 1 : 0;
+
                 departures[timingPointName].push({
                     TargetDepartureTime: pass.TargetDepartureTime,
                     ExpectedDepartureTime: pass.ExpectedDepartureTime,
                     TransportType: pass.TransportType,
                     LinePublicNumber: pass.LinePublicNumber,
+                    LineWheelChairAccessible: wheelchairAccessible,
                     TimingPointName: pass.TimingPointName,
+                    TimingPointWheelChairAccessible: timingPointWheelChairAccessible,
+                    TimingPointVisualAccessible: timingPointVisualAccessible,
                     LastUpdateTimeStamp: pass.LastUpdateTimeStamp,
                     Destination: destination,
                 });

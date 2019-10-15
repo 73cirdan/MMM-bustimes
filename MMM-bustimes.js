@@ -32,6 +32,7 @@ Module.register("MMM-bustimes", {
         showTimingPointIcon: false,
         showTransportTypeIcon: false,
         showLiveIcon: false,
+        showAccessible: false,
 
         transportTypeIcons: {
             "BUS": "bus",
@@ -251,10 +252,20 @@ Module.register("MMM-bustimes", {
                 const stop = this.createCell(row, timingPointName, "stopname");
                 if (this.config.showTimingPointIcon)
                     this.createTimingPointIcon(stop, "default");
+                if (this.config.showAccessible) {
+                    if (departure.TimingPointWheelChairAccessible)
+                        this.createTimingPointIcon(stop, "WHEELCHAIR");
+                    if (departure.TimingPointVisualAccessible)
+                        this.createTimingPointIcon(stop, "VISUAL");
+                }
             }
             if (this.config.showTransportTypeIcon)
                 this.createTransportTypeIconCell(row, departure.TransportType);
             this.createCell(row, departure.LinePublicNumber, "line");
+            if (this.config.showAccessible) {
+                if (departure.LineWheelChairAccessible)
+                    this.createTimingPointIcon(row, "WHEELCHAIR");
+            }
             this.createCell(row, this.getDepartureTime(departure), "time");
 
             if (this.config.showLiveIcon)
