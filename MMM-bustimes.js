@@ -39,14 +39,12 @@ Module.register("MMM-bustimes", {
             "TRAM": "train",
             "METRO": "subway",
             "BOAT": "ship",
-            "SIGN": "sign",
             "default": "question-circle"
         },
 
 	timingpointTypeIcons: {
             "WHEELCHAIR": "wheelchair",
             "VISUAL": "blind",
-            "UNIVERSAL": "universal-access",
             "default": "sign"
 	},
 
@@ -203,15 +201,6 @@ Module.register("MMM-bustimes", {
         return cell
     },
 
-/*    createTimingPointTypeIconCell: function(row, timingPointType) {
-        const iconName = this.config.timingpointTypeIcons[timingPointType] ||
-                       this.config.timingpointTypeIcons["default"];
-        const icon = this.createIcon(iconName);
-        const cell = this.createCell(row, null, "timingpointtype");
-        cell.appendChild(icon);
-        return cell
-    },
-*/
     createTimingPointIcon: function(container, timingPointType) {
         const iconName = this.config.timingpointTypeIcons[timingPointType] ||
                        this.config.timingpointTypeIcons["default"];
@@ -291,6 +280,12 @@ Module.register("MMM-bustimes", {
                 const cell = this.createCell(stopRow, timingPointName, "stopname");
                 if (this.config.showTimingPointIcon)
                     this.createTimingPointIcon(cell, "default");
+                if (this.config.showAccessible) {
+                    if (timingPoint[0].TimingPointWheelChairAccessible)
+                        this.createTimingPointIcon(cell, "WHEELCHAIR");
+                    if (timingPoint[0].TimingPointVisualAccessible)
+                        this.createTimingPointIcon(cell, "VISUAL");
+                }
                 cell.colSpan = (2 + extraCols) * this.config.departs;
             }
 
@@ -300,7 +295,11 @@ Module.register("MMM-bustimes", {
 
                 if (this.config.showTransportTypeIcon)
                     this.createTransportTypeIconCell(row, departure.TransportType);
-                this.createCell(row, departure.LinePublicNumber, "line");
+                const line = this.createCell(row, departure.LinePublicNumber, "line");
+                if (this.config.showAccessible) {
+                    if (departure.LineWheelChairAccessible)
+                        this.createTimingPointIcon(line, "WHEELCHAIR");
+                }
                 this.createCell(row, this.getDepartureTime(departure), "time");
             }
         }
@@ -332,6 +331,12 @@ Module.register("MMM-bustimes", {
                 const cell = this.createCell(stopRow, timingPointName, "stopname");
                 if (this.config.showTimingPointIcon)
                     this.createTimingPointIcon(cell, "default");
+                if (this.config.showAccessible) {
+                    if (timingPoint[0].TimingPointWheelChairAccessible)
+                        this.createTimingPointIcon(cell, "WHEELCHAIR");
+                    if (timingPoint[0].TimingPointVisualAccessible)
+                        this.createTimingPointIcon(cell, "VISUAL");
+                }
                 cell.colSpan = 3 + extraCols;
             }
 
@@ -342,6 +347,10 @@ Module.register("MMM-bustimes", {
                 if (this.config.showTransportTypeIcon)
                     this.createTransportTypeIconCell(row, departure.TransportType);
                 const line = this.createCell(row, departure.LinePublicNumber, "line");
+                if (this.config.showAccessible) {
+                    if (departure.LineWheelChairAccessible)
+                        this.createTimingPointIcon(line, "WHEELCHAIR");
+                }
                 const dest = this.createCell(row, departure.Destination, "destination");
                 const time = this.createCell(row, this.getDepartureTime(departure), "time");
 
