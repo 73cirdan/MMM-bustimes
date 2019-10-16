@@ -201,13 +201,13 @@ Module.register("MMM-bustimes", {
         return cell
     },
 
-    createTimingPointIcon: function(container, timingPointType) {
+    createTimingPointIcon: function(container, timingPointType, insert = true) {
         const iconName = this.config.timingpointTypeIcons[timingPointType] ||
                        this.config.timingpointTypeIcons["default"];
         const icon = this.createIcon(iconName);
         icon.className += (timingPointType == "default") ? " timingpointicon" : " accessibilityicon";
         const lastchild = container.lastChild;
-        container.insertBefore(icon, lastchild);
+        insert ? container.insertBefore(icon, lastchild) : container.appendChild(icon);
      },
 
     /*
@@ -253,12 +253,12 @@ Module.register("MMM-bustimes", {
             this.createCell(row, departure.LinePublicNumber, "line");
             if (this.config.showAccessible) {
                 if (departure.LineWheelChairAccessible)
-                    this.createTimingPointIcon(row, "WHEELCHAIR");
+                    this.createTimingPointIcon(row, "WHEELCHAIR", false);
             }
-            this.createCell(row, this.getDepartureTime(departure), "time");
+            const time = this.createCell(row, this.getDepartureTime(departure), "time");
 
             if (this.config.showLiveIcon)
-                this.createLiveIcon(stop, departure.LastUpdateTimeStamp);
+                this.createLiveIcon(time, departure.LastUpdateTimeStamp);
         }
         return table;
     },
@@ -300,7 +300,10 @@ Module.register("MMM-bustimes", {
                     if (departure.LineWheelChairAccessible)
                         this.createTimingPointIcon(line, "WHEELCHAIR");
                 }
-                this.createCell(row, this.getDepartureTime(departure), "time");
+                const time = this.createCell(row, this.getDepartureTime(departure), "time");
+
+                if (this.config.showLiveIcon)
+                    this.createLiveIcon(time, departure.LastUpdateTimeStamp);
             }
         }
         return table;
@@ -355,7 +358,7 @@ Module.register("MMM-bustimes", {
                 const time = this.createCell(row, this.getDepartureTime(departure), "time");
 
                 if (this.config.showLiveIcon)
-                    this.createLiveIcon(dest, departure.LastUpdateTimeStamp);
+                    this.createLiveIcon(time, departure.LastUpdateTimeStamp);
             }
         }
         return table;
