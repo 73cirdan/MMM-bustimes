@@ -4,5 +4,7 @@
     "invalDisplayMode": "displaymode moet small, medium of large zijn",
     "error": "Er is een fout opgetreden",
     "departure": "Vertrek",
+    "destination": "Bestemming",
+    "stopname": "Halte",
     "line": "Lijn"
 }

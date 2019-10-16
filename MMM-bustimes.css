@@ -10,6 +10,8 @@
 }
 .bustimes .ovtable-medium .stopname {
     text-align: right;
+    padding-left: 10px;
+    font-size: 110%;
 }
 .bustimes .ovtable-large .stopname {
     text-align: center;
@@ -24,35 +26,18 @@
     padding-top: 5px;
 }
 .bustimes .transporttype {
-/*    width: 5px;*/
     text-align: left;
-    font-size: 80%;
 }
-/*.bustimes .timingpointtype {
-    text-align: right;
-    padding: 0px 2px 0px 2px;
-    font-size: 80%;
-}
-.bustimes .ovtable-large .timingpointtype {
-    text-align: center;
-    font-size: 120%;
-}*/   
 .bustimes .ovtable-large .transporttype {
-/*    width: +5px;*/
     text-align: center;
     padding-right: 5px;
-}
-.bustimes .ovtable-medium .transporttype:not(:first-child) {
-    padding-left: 5px;
 }
 .bustimes .line {
     text-align: right;
     padding: 0px 5px 0px 0px;
     font-weight: 900;
 }
-.bustimes .ovtable-medium .line {
-/*    width: +5px;*/
-    text-align: left;
+.bustimes .ovtable-medium .line:not(:first-child) {
     padding-left: 5px;
 }
 .bustimes .time {
@@ -69,17 +54,14 @@
     font-size: 40%;
     transform: rotate(45deg);
 }
-.bustimes .timingpointicon {
-    padding: 0px 5px 0px 0px;
-}
 .bustimes .ovtable-large .timingpointicon {
     padding-left: 5px;
 }
 .bustimes .accessibilityicon {
-/*    width: 5px;*/
+    padding-left: 1px;
     font-size: 60%;
     vertical-align: baseline;
 }
-/*.bustimes .ovtable-medium .accessibilityicon {
-    width: +12px;
-}*/
+.bustimes .transporticon {
+    padding-right: 5px;
+}
