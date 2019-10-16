@@ -257,9 +257,11 @@ Module.register("MMM-bustimes", {
                         this.createTimingPointIcon(stop, "VISUAL");
                 }
             }
-            const line = this.createCell(row, departure.LinePublicNumber, "line");
             if (this.config.showTransportTypeIcon)
-                this.createTransportTypeIcon(line, departure.TransportType);
+                this.createTransportTypeIconCell(row, departure.TransportType);
+            const line = this.createCell(row, departure.LinePublicNumber, "line");
+//            if (this.config.showTransportTypeIcon)
+//                this.createTransportTypeIcon(line, departure.TransportType);
             if (this.config.showAccessible) {
                 if (departure.LineWheelChairAccessible)
                     this.createTimingPointIcon(line, "WHEELCHAIR", false);
@@ -280,6 +282,8 @@ Module.register("MMM-bustimes", {
     createMediumTable: function(timingPointNames) {
         const table = this.createEmptyTable("ovtable-medium");
 
+        const extraCols = this.config.showTransportTypeIcon ? 1 : 0;
+
         for (const timingPointName of timingPointNames) {
             const timingPoint = this.departures[timingPointName];
 
@@ -294,16 +298,18 @@ Module.register("MMM-bustimes", {
                     if (timingPoint[0].TimingPointVisualAccessible)
                         this.createTimingPointIcon(cell, "VISUAL");
                 }
-                cell.colSpan = 2 * this.config.departs;
+                cell.colSpan = (2 + extraCols) * this.config.departs;
             }
 
             const row = this.createRow(table);
             for (let i = 0; i < this.config.departs && i in timingPoint; i++) {
                 const departure = timingPoint[i];
 
-                const line = this.createCell(row, departure.LinePublicNumber, "line");
                 if (this.config.showTransportTypeIcon)
-                    this.createTransportTypeIcon(line, departure.TransportType);
+                    this.createTransportTypeIconCell(row, departure.TransportType);
+                const line = this.createCell(row, departure.LinePublicNumber, "line");
+//                if (this.config.showTransportTypeIcon)
+//                    this.createTransportTypeIcon(line, departure.TransportType);
                 if (this.config.showAccessible) {
                     if (departure.LineWheelChairAccessible)
                         this.createTimingPointIcon(line, "WHEELCHAIR", false);

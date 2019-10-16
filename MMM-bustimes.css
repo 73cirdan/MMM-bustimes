@@ -32,6 +32,15 @@
     text-align: center;
     padding-right: 5px;
 }
+.bustimes .ovtable-medium .transporttype:not(:first-child) {
+    padding-left: 5px;
+}
+.bustimes .ovtable-medium .time:last-child {
+    padding-right: 0px;
+}
+.bustimes .ovtable-medium .time:not(last-child) {
+    padding-right: 20px;
+}
 .bustimes .line {
     text-align: right;
     padding: 0px 5px 0px 0px;
