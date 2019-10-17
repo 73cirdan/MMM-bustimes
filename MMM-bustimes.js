@@ -22,8 +22,9 @@ Module.register("MMM-bustimes", {
         timeFormat: "HH:mm",
 
         destinations: null,
-
+        // OVapi normally has a maximum of 3 departures per timingpoint in the data before it updates itself with new info.
         departures: 3,
+
         showTownName: false,
         showOnlyDepartures: true,
         showDelay: false,
@@ -88,6 +89,10 @@ Module.register("MMM-bustimes", {
         if (this.config.timingPointCode === undefined && this.config.timepointcode) {
             this.config.timingPointCode = this.config.timepointcode;
             this.config.timepointcode = undefined;
+        }
+        if (this.config.departures === undefined && this.config.departs) {
+            this.config.departures = this.config.departs;
+            this.config.departs = undefined;
         }
 
         if (!this.config.timingPointCode && !this.config.stopAreaCode) {
@@ -260,8 +265,6 @@ Module.register("MMM-bustimes", {
             if (this.config.showTransportTypeIcon)
                 this.createTransportTypeIconCell(row, departure.TransportType);
             const line = this.createCell(row, departure.LinePublicNumber, "line");
-//            if (this.config.showTransportTypeIcon)
-//                this.createTransportTypeIcon(line, departure.TransportType);
             if (this.config.showAccessible) {
                 if (departure.LineWheelChairAccessible)
                     this.createTimingPointIcon(line, "WHEELCHAIR", false);
@@ -287,6 +290,10 @@ Module.register("MMM-bustimes", {
         for (const timingPointName of timingPointNames) {
             const timingPoint = this.departures[timingPointName];
 
+            /* Padding the table with 'empty' blocks of cells keeps the table aligned when below 3 departures.
+             */
+            const extraCells = (timingPoint.length < 3) ? 3 - timingPoint.length : 0; 
+
             if (this.config.alwaysShowStopName || timingPointNames.length > 1) {
                 const stopRow = this.createRow(table);
                 const cell = this.createCell(stopRow, timingPointName, "stopname");
@@ -298,18 +305,22 @@ Module.register("MMM-bustimes", {
                     if (timingPoint[0].TimingPointVisualAccessible)
                         this.createTimingPointIcon(cell, "VISUAL");
                 }
-                cell.colSpan = (2 + extraCols) * this.config.departs;
+                cell.colSpan = (2 + extraCols) * (this.config.departures + extraCells);
             }
 
             const row = this.createRow(table);
-            for (let i = 0; i < this.config.departs && i in timingPoint; i++) {
+
+            // Add spacer cells when below 3 departures, and include an extra cell if Timingpoint icon is showed.
+            for (let i = 0; i < (2 + extraCols) * extraCells; i++) {
+                const spacer = this.createCell (row, '&nbsp;', "spacer");
+            }
+
+            for (let i = 0; i < this.config.departures && i in timingPoint; i++) {
                 const departure = timingPoint[i];
 
                 if (this.config.showTransportTypeIcon)
                     this.createTransportTypeIconCell(row, departure.TransportType);
                 const line = this.createCell(row, departure.LinePublicNumber, "line");
-//                if (this.config.showTransportTypeIcon)
-//                    this.createTransportTypeIcon(line, departure.TransportType);
                 if (this.config.showAccessible) {
                     if (departure.LineWheelChairAccessible)
                         this.createTimingPointIcon(line, "WHEELCHAIR", false);
@@ -361,11 +372,10 @@ Module.register("MMM-bustimes", {
                 cell.colSpan = 3 + extraCols;
             }
 
-            for (let i = 0; i < this.config.departs && i in timingPoint; i++) {
+            for (let i = 0; i < this.config.departures && i in timingPoint; i++) {
                 const departure = timingPoint[i];
 
                 const row = this.createRow(table);
-                //also adding column, not just a Transporticon to make text align possible in CSS
                 if (this.config.showTransportTypeIcon)
                     this.createTransportTypeIconCell(row, departure.TransportType);
                 const line = this.createCell(row, departure.LinePublicNumber, "line");
