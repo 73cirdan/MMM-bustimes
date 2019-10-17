@@ -24,6 +24,9 @@ options below for all available options.
 Navigate into your MagicMirror's `modules` folder and execute
  `git clone https://github.com/73cirdan/MMM-bustimes bustimes`
 
+Note: after 73cirdan released his MMM-bustimes, there were some forks made and updated with new options and some bugfixes.
+Have a look at http://github.com/73cirdan/MMM-bustimes and click on the number next to forks.
+
 # Using the module
 
 ## Get your TimingPointCode or StopAreaCode
@@ -78,12 +81,14 @@ Option | Description
 `timingPointCode` | One or more TimingPointCodes. Use a comma separated list (`"code1,code2"`) if you need more than one departure list. When `stopAreaCode` is also set, results are combined.<br>**At least one of `timingPointCode` or `stopAreaCode` is required**
 `stopAreaCode` | One or more StopAreaCodes. Use a comma separated list (`"code1,code2"`) if you need more than one departure list. When `timingPointCode` is also set, results are combined.<br>**At least one of `timingPointCode` or `stopAreaCode` is required**
 `displaymode` | Layout of the module; see above for example and explanation.<br>*Possible values:* `"small"`, `"medium"`, `"large"`<br>**Required**
-`departs` | How many departures are shown per stop (not used in *small* mode).<br>*Default value:* `3`
+`departures` | How many departures are shown per stop (not used in *small* mode).<br>*Possible values* 1-3<br>*Default value:* `3`
 `destinations` | An array with a every destination you care about. Only lines going to any of these destinations will be shown. Valid codes can be found in step 3, under the entry `DestinationCode` of each line.<br>*Default value:* `[]`
 `showTownName` | Include the town's name in the stop's name. This is especially useful for stops in small villages, e.g., "Alde Leie, Brug" instead of just "Brug".<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `showOnlyDepartures` | Only show departures from stops. This filters out lines that terminate at a stop, and thus do not let people get in the vehicle.<br>*Possible values:* `true` or `false`<br>*Default value:* `true`
 `showDelay` | Show departure times as scheduled times and an offset in case of a delay (or early departure). E.g., display "14:57+5" instead of "15:02".<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `showTransportTypeIcon` | Show an icon representing the transport type (bus, ferry, metro or tram) next to departures.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
+`showTimingpointIcon` | Show an icon representing a typical electronic timingpoint times table sign used at most timingpoint.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
+`showAccessibilityIcon` | Show an icon representing the timingpoint and line Accessibility features, (wheelchair, visual or both).<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `showLiveIcon` | Show an icon representing whether the current displayed time is live (i.e., it has been updated in the last 10 minutes). Only works for *small* and *large* display modes.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `showHeader` | Show a header with column names for the *large* display mode.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `alwaysShowStopName` | When this is set to `false` the name of the stop will be hidden when the module is only displaying data for a single stop in the *medium* or *large* display mode.<br>*Possible values:* `true` or `false`<br>*Default value:* `true`
@@ -99,7 +104,7 @@ Option | Description
             timingPointCode: "20320110,20141200",
             displaymode: "medium",
             showTownName: true,
-            departs: 3
+            departures: 3
         }
     },
 ```
