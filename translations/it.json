@@ -1,5 +1,10 @@
 {
     "noData": "Nessuna opzione",
+    "notSet": "timingPointCode o stopAreaCode non impostati in config",
+    "invalDisplayMode": "displaymode deve essere small, medium o large",
+    "error": "Si è verificato un errore",
     "departure": "Partenza",
+    "destination": "Destinazione",
+    "stopname": "Fermata",
     "line": "Linea"
 }
