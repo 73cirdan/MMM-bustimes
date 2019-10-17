@@ -87,8 +87,8 @@ Option | Description
 `showOnlyDepartures` | Only show departures from stops. This filters out lines that terminate at a stop, and thus do not let people get in the vehicle.<br>*Possible values:* `true` or `false`<br>*Default value:* `true`
 `showDelay` | Show departure times as scheduled times and an offset in case of a delay (or early departure). E.g., display "14:57+5" instead of "15:02".<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `showTransportTypeIcon` | Show an icon representing the transport type (bus, ferry, metro or tram) next to departures.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
-`showTimingpointIcon` | Show an icon representing a typical electronic timingpoint times table sign used at most timingpoint.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
-`showAccessibilityIcon` | Show an icon representing the timingpoint and line Accessibility features, (wheelchair, visual or both).<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
+`showTimingPointIcon` | Show an icon representing a modern electronic sign used at timingpoints.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
+`showAccessible` | Show an icon representing the timingpoint and line accessibility features: wheelchair, visual or both.<br>Icons will be displayed for the timingpoint only if the timingpoint name is also displayed (see AlwaysShowStopName).<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `showLiveIcon` | Show an icon representing whether the current displayed time is live (i.e., it has been updated in the last 10 minutes). Only works for *small* and *large* display modes.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `showHeader` | Show a header with column names for the *large* display mode.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `alwaysShowStopName` | When this is set to `false` the name of the stop will be hidden when the module is only displaying data for a single stop in the *medium* or *large* display mode.<br>*Possible values:* `true` or `false`<br>*Default value:* `true`
