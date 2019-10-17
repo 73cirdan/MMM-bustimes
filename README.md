@@ -1,4 +1,4 @@
-# bustimes
+# MMM-bustimes
 Magic Mirror - Dutch bus times
 
 Shows departures of buses, trams, metro's and ferries for any stop in the Netherlands.
@@ -97,7 +97,7 @@ Option | Description
 ## Example config.js content for this module
 ```javascript
     {
-        module: "bustimes",
+        module: "MMM-bustimes",
         position: "top_left",
         header: "Bustimes",
         config: {
