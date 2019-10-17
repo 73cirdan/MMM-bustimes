@@ -78,3 +78,9 @@
     padding-left: 5px;
     padding-right: 5px;
 }
+.bustimes .operator::before {
+    content: "(";
+}
+.bustimes .operator::after {
+    content: ")";
+}

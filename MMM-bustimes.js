@@ -34,6 +34,7 @@ Module.register("MMM-bustimes", {
         showTransportTypeIcon: false,
         showLiveIcon: false,
         showAccessible: false,
+        showOperator: false,
 
         transportTypeIcons: {
             "BUS": "bus",
@@ -269,6 +270,8 @@ Module.register("MMM-bustimes", {
                 if (departure.LineWheelChairAccessible)
                     this.createTimingPointIcon(line, "WHEELCHAIR", false);
             }
+            if (this.config.showOperator)
+                this.createCell(row, departure.Operator, "operator");
             const time = this.createCell(row, this.getDepartureTime(departure), "time");
 
             if (this.config.showLiveIcon)
@@ -286,13 +289,18 @@ Module.register("MMM-bustimes", {
         const table = this.createEmptyTable("ovtable-medium");
 
         const extraCols = this.config.showTransportTypeIcon ? 1 : 0;
+        const extraOpp = this.config.showOperator ? 1 : 0;
 
         for (const timingPointName of timingPointNames) {
             const timingPoint = this.departures[timingPointName];
 
-            /* Padding the table with 'empty' blocks of cells keeps the table aligned when below 3 departures.
+            /* Padding the table with minimal 3 'empty' blocks of cells, this keeps the table aligned when departures < 3.
              */
-            const extraCells = (timingPoint.length < 3) ? 3 - timingPoint.length : 0; 
+            const extraCells = (this.config.departures < 3) // Test 1
+                ? 3 - this.config.departures //T1=true: minimal 3 cells
+                : (timingPoint.length < this.config.departures) //T1=false: Test 2
+                ? this.config.departures - timingPoint.length //T2=true: substract
+                : 0; //T2=false: no extra cells needed
 
             if (this.config.alwaysShowStopName || timingPointNames.length > 1) {
                 const stopRow = this.createRow(table);
@@ -305,13 +313,13 @@ Module.register("MMM-bustimes", {
                     if (timingPoint[0].TimingPointVisualAccessible)
                         this.createTimingPointIcon(cell, "VISUAL");
                 }
-                cell.colSpan = (2 + extraCols) * (this.config.departures + extraCells);
+                cell.colSpan = (2 + extraCols + extraOpp) * (this.config.departures + extraCells);
             }
 
             const row = this.createRow(table);
 
             // Add spacer cells when below 3 departures, and include an extra cell if Timingpoint icon is showed.
-            for (let i = 0; i < (2 + extraCols) * extraCells; i++) {
+            for (let i = 0; i < (2 + extraCols + extraOpp) * extraCells; i++) {
                 const spacer = this.createCell (row, '&nbsp;', "spacer");
             }
 
@@ -325,6 +333,8 @@ Module.register("MMM-bustimes", {
                     if (departure.LineWheelChairAccessible)
                         this.createTimingPointIcon(line, "WHEELCHAIR", false);
                 }
+                if (this.config.showOperator)
+                    this.createCell(row, departure.Operator, "operator");
                 const time = this.createCell(row, this.getDepartureTime(departure), "time");
 
                 if (this.config.showLiveIcon)
@@ -343,11 +353,12 @@ Module.register("MMM-bustimes", {
         const table = this.createEmptyTable("ovtable-large");
 
         const extraCols = this.config.showTransportTypeIcon ? 1 : 0;
+        const extraOpp = this.config.showOperator ? 1 : 0;
 
         if (this.config.showHeader) {
             const row = this.createRow(table);
             const cell = this.createCell(row, this.translate("line"), null, "th");
-            cell.colSpan = 1 + extraCols;
+            cell.colSpan = 1 + extraCols + extraOpp;
             var text = this.translate("destination")
             if (this.config.alwaysShowStopName || timingPointNames.length > 1)
                text = this.translate("stopname") + " / " + text; 
@@ -369,7 +380,7 @@ Module.register("MMM-bustimes", {
                     if (timingPoint[0].TimingPointVisualAccessible)
                         this.createTimingPointIcon(cell, "VISUAL");
                 }
-                cell.colSpan = 3 + extraCols;
+                cell.colSpan = 3 + extraCols + extraOpp;
             }
 
             for (let i = 0; i < this.config.departures && i in timingPoint; i++) {
@@ -383,6 +394,8 @@ Module.register("MMM-bustimes", {
                     if (departure.LineWheelChairAccessible)
                         this.createTimingPointIcon(line, "WHEELCHAIR", false);
                 }
+                if (this.config.showOperator)
+                    this.createCell(row, departure.Operator, "operator");
                 const dest = this.createCell(row, departure.Destination, "destination");
                 const time = this.createCell(row, this.getDepartureTime(departure), "time");
 
