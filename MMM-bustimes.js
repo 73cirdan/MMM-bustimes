@@ -22,7 +22,6 @@ Module.register("MMM-bustimes", {
         timeFormat: "HH:mm",
 
         destinations: null,
-        // OVapi normally has a maximum of 3 departures per timingpoint in the data before it updates itself with new info.
         departures: 3,
 
         showTownName: false,
@@ -305,6 +304,8 @@ Module.register("MMM-bustimes", {
             if (this.config.alwaysShowStopName || timingPointNames.length > 1) {
                 const stopRow = this.createRow(table);
                 const cell = this.createCell(stopRow, timingPointName, "stopname");
+                if  (this.config.showTimingPointIcon || this.config.showAccessible)
+                    cell.innerHTML = "&nbsp;" + cell.innerHTML;
                 if (this.config.showTimingPointIcon)
                     this.createTimingPointIcon(cell, "default");
                 if (this.config.showAccessible) {
