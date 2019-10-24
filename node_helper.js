@@ -80,6 +80,7 @@ module.exports = NodeHelper.create({
 
             for (const pass of Object.values(Passes)) {
                 const destination = pass.DestinationName50 || "?";
+                const operator = pass.OperatorCode || pass.DataOwnerCode || "?";
 
                 if (destinationFilter.length > 0 &&
                     !destinationFilter.includes(pass.DestinationCode)) {
@@ -100,6 +101,7 @@ module.exports = NodeHelper.create({
                     TimingPointName: pass.TimingPointName,
                     TimingPointWheelChairAccessible: timingPointWheelChairAccessible,
                     TimingPointVisualAccessible: timingPointVisualAccessible,
+                    Operator: operator,
                     LastUpdateTimeStamp: pass.LastUpdateTimeStamp,
                     Destination: destination,
                 });
