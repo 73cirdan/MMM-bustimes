@@ -105,7 +105,7 @@ Option | Description
 ```
 
 # Special Thanks
-Thanks to contributors [hansterwal](https://github.com/hansterwal). [koenk](https://github.com/koenk). [vpilo](https://github.com/vpilo).  for making this a better module !!!
+Thanks to contributors [hansterwal](https://github.com/hansterwal), [koenk](https://github.com/koenk) and [vpilo](https://github.com/vpilo)  for making this a better module !!!
 
 The MIT License (MIT)
 =====================
