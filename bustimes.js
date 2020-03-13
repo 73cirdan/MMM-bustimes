@@ -14,12 +14,31 @@ Module.register("bustimes", {
         animationSpeed: 1000,
 
         apiBase: "http://v0.ovapi.nl",
-        tpcEndpoint: "tpc",
+        timingPointEndpoint: "tpc",
+        stopAreaEndpoint: "stopareacode",
+        departuresOnlySuffix: "departures",
 
         refreshInterval: 5 * 1000 * 60, // refresh every 5 minutes
-	timeFormat: "HH:mm", 
+        timeFormat: "HH:mm",
 
         destinations: null,
+
+        departures: 3,
+        showTownName: false,
+        showOnlyDepartures: true,
+        showDelay: false,
+        showHeader: false,
+        alwaysShowStopName: true,
+        showTransportTypeIcon: false,
+        showLiveIcon: false,
+
+        transportTypeIcons: {
+            "BUS": "bus",
+            "TRAM": "train",
+            "METRO": "subway",
+            "BOAT": "ship",
+            "default": "question-circle"
+        },
 
         debug: false
     },
@@ -31,7 +50,7 @@ Module.register("bustimes", {
 
     // Define required scripts.
     getStyles: function() {
-        return ["bustimes.css"];
+        return ["bustimes.css", "font-awesome.css"];
     },
 
     // Define required translations.
@@ -50,8 +69,29 @@ Module.register("bustimes", {
         // Set locale.
         moment.locale(config.language);
 
+        this.errorMsg = "";
+        this.departures = {};
+
         if (!Array.isArray(this.config.destinations)) {
             this.config.destinations = [];
+        }
+
+        // Preserve backwards compatibly
+        if (this.config.timingPointCode === undefined && this.config.timepointcode) {
+            this.config.timingPointCode = this.config.timepointcode;
+            this.config.timepointcode = undefined;
+        }
+
+        if (!this.config.timingPointCode && !this.config.stopAreaCode) {
+            this.errorMsg = this.translate("notSet");
+            this.updateDom();
+            return;
+        }
+
+        if (!["small", "medium", "large"].includes(this.config.displaymode)) {
+            this.errorMsg = this.translate("invalDisplayMode");
+            this.updateDom();
+            return;
         }
 
         this.resume();
@@ -84,232 +124,255 @@ Module.register("bustimes", {
         }
     },
 
-    // Override dom generator.
-    getDom: function() {
-        var wrapper = document.createElement("div");
+    /*
+     * Returns the departure time as a string. Depending on the config, this may
+     * either be the time itself, or the scheduled time and the expected offset
+     * in minutes.
+     */
+    getDepartureTime: function(departure) {
+        let time = "";
+        if (this.config.showDelay) {
+            const plannedTime = moment(departure.TargetDepartureTime);
+            const liveTime = moment(departure.ExpectedDepartureTime);
+            const timeDiff = moment.duration(liveTime.diff(plannedTime));
 
-        if (!this.loaded) {
-            wrapper.innerHTML = this.translate("LOADING");
-            wrapper.className = "dimmed light small";
-            return wrapper;
-        }
-        if (!this.departures.length) {
-            wrapper.innerHTML = this.translate("noData");
-            wrapper.className = "dimmed light small";
-            return wrapper;
-        }
+            // Round down minutes, to be pessimistic for early buses,
+            // and optimistic for delayed buses (it's better to arrive
+            // early at bus stop, rather than late and miss bus).
+            const minutesDiff = Math.abs(Math.floor(timeDiff.asMinutes()));
 
-        var table = document.createElement("table");
-        table.id = "ovtable";
+            // We take the absolute value of minutes and use a bigger
+            // (clearer) minus(-like) sign for early departures.
+            const sign = liveTime.isBefore(plannedTime) ? "&ndash;" : "+";
+
+            time = plannedTime.format(this.config.timeFormat);
+            if (minutesDiff > 0)
+                time += sign + minutesDiff;
+        } else {
+            time = moment(departure.ExpectedDepartureTime).format(this.config.timeFormat);
+        }
+        return time;
+    },
+
+    createEmptyTable: function(className) {
+        const table = document.createElement("table");
         table.className = "small thin light";
+        if (className)
+            table.className += " " + className;
+        return table;
+    },
 
-        if (this.config.displaymode === "large") {
-            var row = document.createElement("tr");
-            var lineHeader = document.createElement("th");
-            lineHeader.innerHTML = this.translate("line");
-            lineHeader.className = "ovheader_r";
-            row.appendChild(lineHeader);
-            var timeHeader = document.createElement("th");
-            timeHeader.innerHTML = this.translate("departure");
-            timeHeader.className = "ovheader";
-            row.appendChild(timeHeader);
-            table.appendChild(row);
-        }
+    createRow: function(table) {
+        const row = document.createElement("tr");
+        table.appendChild(row);
+        return row;
+    },
 
-        var currentTPC = "";
-        var numberOfTimes = 0;
-        var tpcRow;
-        var row = document.createElement("tr");
-        for (var i in this.departures) {
-            var currentDeparture = this.departures[i];
+    createCell: function(row, content, className, cellType = "td") {
+        const cell = document.createElement(cellType);
+        row.appendChild(cell);
+        if (content)
+            cell.innerHTML = content;
+        if (className)
+            cell.className = className;
+        return cell;
+    },
 
-            // print the TimingPoint only once as a row
-            if (currentTPC != currentDeparture.TimingPointName) {
-                currentTPC = currentDeparture.TimingPointName;
-                if (this.config.debug)
-                    Log.info(this.name + ": stop " + currentTPC);
-                tpcRow = document.createElement("tr");
-                var cellTpc = document.createElement("td");
-                cellTpc.innerHTML = currentTPC;
-                cellTpc.className = "destinationinfo";
-                if (this.config.displaymode === "large") {
-                    cellTpc.colSpan = 2;
-                } else if (this.config.displaymode === "medium") {
-                    cellTpc.colSpan = 2 + 2 * this.config.departs;
-                } else {
-                    cellTpc.colSpan = 4;
-                }
-                tpcRow.appendChild(cellTpc);
-                table.appendChild(tpcRow);
-                numberOfTimes = 0;
-            }
+    createIcon: function(iconName) {
+        const icon = document.createElement("span");
+        icon.className = "fa fa-" + iconName;
+        return icon;
+    },
 
-            // print only the first three(config) time and line
-            if (numberOfTimes < this.config.departs) {
-                var time = moment(currentDeparture.ExpectedArrivalTime).format(this.config.timeFormat);
-                if (this.config.debug)
-                    Log.info(this.name + ": " + currentDeparture.TransportType.toLowerCase() + " " + currentDeparture.LinePublicNumber + " will arrive at: " + time);
-
-                var cellLine = document.createElement("td");
-                cellLine.innerHTML = currentDeparture.LinePublicNumber;
-                if (currentDeparture.Destination != null && this.config.showDestination ) {
-                    cellLine.innerHTML += " (" + currentDeparture.Destination + ")";
-                }
-                cellLine.className = "lineinfo";
-                if (this.config.displaymode === "small") {
-                    if (numberOfTimes == 0) tpcRow.appendChild(cellLine);
-                } else {
-                    row.appendChild(cellLine);
-                }
-
-                var cellDeparture = document.createElement("td");
-                cellDeparture.innerHTML = time;
-                cellDeparture.className = "timeinfo";
-                if (this.config.displaymode === "small") {
-                    if (numberOfTimes == 0) tpcRow.appendChild(cellDeparture);
-                } else {
-                    row.appendChild(cellDeparture);
-                }
-
-                //var cellTransport = document.createElement("td");
-                //cellTransport.className = "timeinfo";
-                //var symbolTransportation = document.createElement("span");
-                //symbolTransportation.className = this.config.iconTable[currentDeparture.transportation];
-                //cellTransport.appendChild(symbolTransportation);
-                //row.appendChild(cellTransport);
-
-
-                table.appendChild(row);
-                if ((this.config.displaymode === "large") ||
-                    (this.config.departs == numberOfTimes + 1)) {
-                    row = document.createElement("tr");
-                    }
-            }
-            numberOfTimes++;
-
-        }
-        wrapper.appendChild(table);
-
-        return wrapper;
+    createTransportTypeIconCell: function(row, transportType) {
+        const iconName = this.config.transportTypeIcons[transportType] ||
+                       this.config.transportTypeIcons["default"];
+        const icon = this.createIcon(iconName);
+        const cell = this.createCell(row, null, "transporttype");
+        cell.appendChild(icon);
+        return cell
     },
 
     /*
-     * sort the results 1st on tpc, than by date-time
+     * Create an icon representing the shown info is live if the info has been
+     * updated in the last 10 minutes.
      */
-    sortDepartures: function(tpc, time) {
-
-        // sort on a String in a array of object like : [(String1, String2, String3, ..)]
-        function dynamicSort(property) {
-            var sortOrder = 1;
-            if (property[0] === "-") {
-                sortOrder = -1;
-                property = property.substr(1);
-            }
-            return function(a, b) {
-                var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
-                return result * sortOrder;
-            }
+    createLiveIcon: function(container, lastUpdateTimeStamp) {
+        const lastUpdate = moment(lastUpdateTimeStamp);
+        const now = moment();
+        const timeSinceLastUpdate = moment.duration(now.diff(lastUpdate));
+        if (timeSinceLastUpdate.asMinutes() < 10) {
+            const icon = this.createIcon("wifi");
+            icon.className += " liveicon";
+            container.appendChild(icon);
         }
-        // sort on a set of string in an array of objects like: [(Sring1, String2, String3, ..)]
-        function dynamicSortMultiple() {
-            /*
-             * save the arguments object as it will be overwritten
-             * note that arguments object is an array-like object
-             * consisting of the names of the properties to sort by
-             */
-            var props = arguments;
-            return function(obj1, obj2) {
-                var i = 0,
-                result = 0,
-                numberOfProperties = props.length;
-                /* try getting a different result from 0 (equal)
-                 * as long as we have extra properties to compare
-                 */
-                while (result === 0 && i < numberOfProperties) {
-                    result = dynamicSort(props[i])(obj1, obj2);
-                    i++;
-                }
-                return result;
-            }
-        }
-
-        // sort on busstop(timingpoint), and time.
-        this.departures.sort(dynamicSortMultiple(tpc, time));
     },
 
-    /* processBusTimes(data)
-     * Uses the received data to set the various values.
-     *
-     * argument data object - busstop information received form openapi
+    /*
+     * Create the small table for departures, with a single row per stop,
+     * showing the earliest departure from that stop.
      */
-    processBusTimes: function(data) {
+    createSmallTable: function(timingPointNames) {
+        const table = this.createEmptyTable("ovtable-small");
 
-        if (!data) {
-            // Did not receive usable new data.
-            // Maybe this needs a better check?
-            Log.error(self.name + ": Could not parse bus times.");
-            return;
+        for (const timingPointName of timingPointNames) {
+            const departure = this.departures[timingPointName][0];
+
+            const row = this.createRow(table);
+            const stop = this.createCell(row, timingPointName, "stopname");
+            if (this.config.showTransportTypeIcon)
+                this.createTransportTypeIconCell(row, departure.TransportType);
+            this.createCell(row, departure.LinePublicNumber, "line");
+            this.createCell(row, this.getDepartureTime(departure), "time");
+
+            if (this.config.showLiveIcon)
+                this.createLiveIcon(stop, departure.LastUpdateTimeStamp);
         }
+        return table;
+    },
 
-        if (this.config.debug)
-            Log.info(this.name + ": Received data");
+    /*
+     * Create the medium table for departures, with two rows per stop, one
+     * showing the stop name and the second showing N upcoming departures.
+     */
+    createMediumTable: function(timingPointNames) {
+        const table = this.createEmptyTable("ovtable-medium");
 
-        var msg = JSON.parse(data); // converts it to a JS native object.
+        const extraCols = this.config.showTransportTypeIcon ? 1 : 0;
 
-        this.departures = []; // our object for the Dom
-        for (var i in msg) {
-            var tpc = msg[i];
-            for (var j in tpc) {
-                // only interested in passes (ignoring stop and messages)
-                var passes = tpc[j];
-                if (j == "Passes") {
-                    for (var k in passes) {
-                        var bus = passes[k];
-                        var destination = "DestinationName50" in bus ? bus.DestinationName50 : null;
+        for (const timingPointName of timingPointNames) {
+            const timingPoint = this.departures[timingPointName];
 
-                        if (this.config.destinations.length > 0 && !this.config.destinations.includes(bus.DestinationCode)) {
-                            if (this.config.debug)
-                                Log.info(this.name + ": Skipped line " + k + " (number " + bus.LinePublicNumber + ") "
-                                + " with destination " + bus.DestinationCode + " (" + (destination != null ? destination : "no name") + ")");
-                            continue;
-                        }
+            if (this.config.alwaysShowStopName || timingPointNames.length > 1) {
+                const stopRow = this.createRow(table);
+                const cell = this.createCell(stopRow, timingPointName, "stopname");
+                cell.colSpan = (2 + extraCols) * this.config.departs;
+            }
 
-                        this.departures.push({
-                            ExpectedArrivalTime: bus.ExpectedArrivalTime,
-                            TransportType: bus.TransportType,
-                            LinePublicNumber: bus.LinePublicNumber,
-                            TimingPointName: bus.TimingPointName,
-                            Destination: destination,
-                        });
-                    }
-                }
+            const row = this.createRow(table);
+            for (let i = 0; i < this.config.departs && i in timingPoint; i++) {
+                const departure = timingPoint[i];
+
+                if (this.config.showTransportTypeIcon)
+                    this.createTransportTypeIconCell(row, departure.TransportType);
+                this.createCell(row, departure.LinePublicNumber, "line");
+                this.createCell(row, this.getDepartureTime(departure), "time");
             }
         }
+        return table;
+    },
 
-        this.sortDepartures("TimingPointName", "ExpectedArrivalTime");
+    /*
+     * Create the large table for departures, with N upcoming departures per
+     * stop, each on their own row, including additional information such as the
+     * destination.
+     */
+    createLargeTable: function(timingPointNames) {
+        const table = this.createEmptyTable("ovtable-large");
 
-        this.loaded = true;
-        this.updateDom(this.config.animationSpeed);
+        const extraCols = this.config.showTransportTypeIcon ? 1 : 0;
+
+        if (this.config.showHeader) {
+            const row = this.createRow(table);
+            const cell = this.createCell(row, this.translate("line"), null, "th");
+            cell.colSpan = 2 + extraCols;
+            this.createCell(row, this.translate("departure"), null, "th");
+        }
+
+        for (const timingPointName of timingPointNames) {
+            const timingPoint = this.departures[timingPointName];
+
+            if (this.config.alwaysShowStopName || timingPointNames.length > 1) {
+                const stopRow = this.createRow(table);
+                const cell = this.createCell(stopRow, timingPointName, "stopname");
+                cell.colSpan = 3 + extraCols;
+            }
+
+            for (let i = 0; i < this.config.departs && i in timingPoint; i++) {
+                const departure = timingPoint[i];
+
+                const row = this.createRow(table);
+                if (this.config.showTransportTypeIcon)
+                    this.createTransportTypeIconCell(row, departure.TransportType);
+                const line = this.createCell(row, departure.LinePublicNumber, "line");
+                const dest = this.createCell(row, departure.Destination, "destination");
+                const time = this.createCell(row, this.getDepartureTime(departure), "time");
+
+                if (this.config.showLiveIcon)
+                    this.createLiveIcon(dest, departure.LastUpdateTimeStamp);
+            }
+        }
+        return table;
+    },
+
+    /*
+     * Returns a DOM object that shows the given message.
+     */
+    createMessage: function(message) {
+        const div = document.createElement("div");
+        div.innerHTML = message;
+        div.className = "dimmed light small";
+        return div;
+    },
+
+    /*
+     * Constructs the content to be shown for this module. This will either be
+     * a message (e.g., an error), or a table corresponding to the display mode.
+     */
+    createContent: function() {
+        if (this.errorMsg)
+            return this.createMessage(this.errorMsg);
+        if (!this.loaded)
+            return this.createMessage(this.translate("LOADING"));
+
+        const timingPointNames = Object.keys(this.departures);
+        timingPointNames.sort();
+
+        if (timingPointNames.length == 0)
+            return this.createMessage(this.translate("noData"));
+
+        const tableCreators = {
+            small: this.createSmallTable,
+            medium: this.createMediumTable,
+            large: this.createLargeTable,
+        };
+        return tableCreators[this.config.displaymode].call(this, timingPointNames);
+    },
+
+    // Override dom generator.
+    getDom: function() {
+        const wrapper = document.createElement("div");
+        wrapper.className = "bustimes";
+        wrapper.appendChild(this.createContent());
+        return wrapper;
     },
 
     /*
      * Asks the node helper to request new data.
      */
     requestData: function() {
-        this.loaded = false;
-        this.updateDom();
-
         if (this.config.debug)
             Log.info(this.name + ": Requested data");
 
-        this.sendSocketNotification('GETDATA', this.config);
+        this.sendSocketNotification('GETDATA', {
+            identifier: this.identifier,
+            config: this.config
+        });
     },
 
-
     socketNotificationReceived: function(notification, payload) {
-        if (notification === "RESPONSE") {
+        if (notification === "DATA" && payload.identifier === this.identifier) {
+            this.departures = payload.data;
             this.loaded = true;
-            this.processBusTimes(payload);
+            this.errorMsg = "";
+            this.updateDom(this.config.animationSpeed);
+        }
+
+        if (notification === "ERROR" && payload.identifier === this.identifier) {
+            if (this.config.debug)
+                Log.warn(this.name + ": Error fetching departures: " + payload.error);
+            this.errorMsg = this.translate("error");
+            this.updateDom(this.config.animationSpeed);
         }
     }
 
