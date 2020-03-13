@@ -104,6 +104,9 @@ Option | Description
     },
 ```
 
+## Thanks
+Thanks to contributors hansterwal, vpilo and koenk for making this a better module !!!
+
 The MIT License (MIT)
 =====================
 Copyright 2017 Cirdan
