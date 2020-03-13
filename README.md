@@ -67,7 +67,7 @@ More information can be found on the
      `[sac]` is the StopAreaCode you found in step 2. Mind the change from
      *line* to *stopareacode* in the URL. The passes part of the result
      should contain buses, trams or boats stopping at this stop. All lines
-     terminating at this stop are included. If all looks good, copy the tpc into
+     terminating at this stop are included. If all looks good, copy the sac into
      the config.<br>
      *Based on the example in step two, we get `http://v0.ovapi.nl/stopareacode/OliBru`.*
 
