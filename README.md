@@ -104,8 +104,8 @@ Option | Description
     },
 ```
 
-## Thanks
-Thanks to contributors hansterwal, vpilo and koenk for making this a better module !!!
+# Special Thanks
+Thanks to contributors [hansterwal](https://github.com/hansterwal). [koenk](https://github.com/koenk). [vpilo](https://github.com/vpilo).  for making this a better module !!!
 
 The MIT License (MIT)
 =====================
