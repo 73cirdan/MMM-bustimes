@@ -22,7 +22,15 @@ options below for all available options.
 
 # Installation
 Navigate into your MagicMirror's `modules` folder and execute
- `git clone https://github.com/73cirdan/MMM-bustimes bustimes`
+
+`git clone https://github.com/73cirdan/MMM-bustimes bustimes`
+
+
+After that go into the `bustimes` folder and excute
+
+
+`npm install` 
+
 
 # Using the module
 
