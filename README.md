@@ -33,9 +33,13 @@ After that go into the `MMM-bustimes` folder and execute
 
 *Note:* After releasing MMM-bustimes, there were some forks made and updated with new options and some bugfixes. These were merged into MMM-bustimes in june 2022. The module now is named `MMM-bustimes` to reflect MM naming convention and uses `axios` in stead of the deprecated `request` module. 
 
-To update, `git pull` and `npm install` 
+# Update
 
-Be sure to change the name in config.js into `MMM-bustimes` !!
+`git pull` and `npm install` 
+
+
+Be sure to change the module name in config.js into `MMM-bustimes` !!
+And check the names of the config options, because some of them have changed due to consistency.
 
 
 # Using the module
