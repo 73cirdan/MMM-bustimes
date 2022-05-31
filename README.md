@@ -35,6 +35,9 @@ After that go into the `bustimes` folder and excute
 *Note:* After 73cirdan released MMM-bustimes, there were some forks made and updated with new options and some bugfixes.
 Have a look at http://github.com/73cirdan/MMM-bustimes and click on the number next to forks.
 
+*Note:* After 73cirdan released MMM-bustimes, there were some forks made and updated with new options and some bugfixes.
+Have a look at http://github.com/73cirdan/MMM-bustimes and click on the number next to forks.
+
 # Using the module
 
 ## Get your TimingPointCode or StopAreaCode
