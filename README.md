@@ -38,7 +38,8 @@ After that go into the `MMM-bustimes` folder and execute
 `git pull` and `npm install` 
 
 
-Be sure to change the module name in config.js into `MMM-bustimes` !!
+Be sure to change the module name in config.js into `MMM-bustimes` if you are on an older version !!
+Also rename the module folder `bustimes` into `MMM-bustimes`.
 And check the names of the config options, because some of them have changed due to consistency.
 
 
