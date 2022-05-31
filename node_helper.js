@@ -9,22 +9,21 @@
  */
 
 const NodeHelper = require('node_helper');
-const util = require('util');
-const request = require('request');
-const getAsync = util.promisify(request.get);
+const axios = require("axios").default;
 
 /*
- * A wrapper for getAsync that throws an error if the status code is not 200.
+ * A wrapper for axios.get that throws an error if the status code is not 200.
  */
 const getCheckedAsync = (url) =>
-    getAsync(url)
+    
+    axios.get(url)
     .catch(err => {
         throw new Error("Error fetching " + url + ": " + err);
     })
-    .then(({statusCode, body}) => {
-        if (statusCode != 200)
-            throw new Error("Error fetching " + url + ": Status " + statusCode);
-        return body;
+    .then(({status, data}) => {
+        if (status != 200)
+            throw new Error("Error fetching " + url + ": Status " + status);
+        return data;
     });
 
 module.exports = NodeHelper.create({
@@ -40,8 +39,9 @@ module.exports = NodeHelper.create({
         if (config.showOnlyDepartures)
             url += "/" + config.departuresOnlySuffix;
 
+	console.log(url);
+
         return getCheckedAsync(url)
-            .then(JSON.parse);
     },
 
     /*
