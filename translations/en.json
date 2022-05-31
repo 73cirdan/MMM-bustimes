@@ -4,5 +4,7 @@
     "invalDisplayMode": "displaymode must be small, medium or large",
     "error": "An error has occured",
     "departure": "Departure",
+    "destination": "Destination",
+    "stopname": "Stop",
     "line": "Line"
 }

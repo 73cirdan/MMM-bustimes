@@ -39,8 +39,6 @@ module.exports = NodeHelper.create({
         if (config.showOnlyDepartures)
             url += "/" + config.departuresOnlySuffix;
 
-	console.log(url);
-
         return getCheckedAsync(url)
     },
 
@@ -72,11 +70,15 @@ module.exports = NodeHelper.create({
                 Stop.TimingPointTown + ", " + Stop.TimingPointName :
                 Stop.TimingPointName;
 
+            const timingPointWheelChairAccessible = (Stop.TimingPointWheelChairAccessible == "ACCESSIBLE") ? 1 : 0;
+            const timingPointVisualAccessible = (Stop.TimingPointVisualAccessible == "ACCESSIBLE") ? 1 : 0;
+
             if (!departures[timingPointName])
                 departures[timingPointName] = [];
 
             for (const pass of Object.values(Passes)) {
                 const destination = pass.DestinationName50 || "?";
+                const operator = pass.OperatorCode || pass.DataOwnerCode || "?";
 
                 if (destinationFilter.length > 0 &&
                     !destinationFilter.includes(pass.DestinationCode)) {
@@ -86,12 +88,18 @@ module.exports = NodeHelper.create({
                     continue;
                 }
 
+                const wheelchairAccessible = (pass.WheelChairAccessible == "ACCESSIBLE") ? 1 : 0;
+
                 departures[timingPointName].push({
                     TargetDepartureTime: pass.TargetDepartureTime,
                     ExpectedDepartureTime: pass.ExpectedDepartureTime,
                     TransportType: pass.TransportType,
                     LinePublicNumber: pass.LinePublicNumber,
+                    LineWheelChairAccessible: wheelchairAccessible,
                     TimingPointName: pass.TimingPointName,
+                    TimingPointWheelChairAccessible: timingPointWheelChairAccessible,
+                    TimingPointVisualAccessible: timingPointVisualAccessible,
+                    Operator: operator,
                     LastUpdateTimeStamp: pass.LastUpdateTimeStamp,
                     Destination: destination,
                 });
