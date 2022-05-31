@@ -23,20 +23,20 @@ options below for all available options.
 # Installation
 Navigate into your MagicMirror's `modules` folder and execute
 
-`git clone https://github.com/73cirdan/MMM-bustimes bustimes`
+`git clone https://github.com/73cirdan/MMM-bustimes`
 
 
-After that go into the `bustimes` folder and excute
+After that go into the `MMM-bustimes` folder and execute
 
 
 `npm install` 
 
+*Note:* After releasing MMM-bustimes, there were some forks made and updated with new options and some bugfixes. These were merged into MMM-bustimes in june 2022. The module now is named `MMM-bustimes` to reflect MM naming convention and uses `axios` in stead of the deprecated `request` module. 
 
-*Note:* After 73cirdan released MMM-bustimes, there were some forks made and updated with new options and some bugfixes.
-Have a look at http://github.com/73cirdan/MMM-bustimes and click on the number next to forks.
+To update, `git pull` and `npm install` 
 
-*Note:* After 73cirdan released MMM-bustimes, there were some forks made and updated with new options and some bugfixes.
-Have a look at http://github.com/73cirdan/MMM-bustimes and click on the number next to forks.
+Be sure to change the name in config.js into `MMM-bustimes` !!
+
 
 # Using the module
 
@@ -122,7 +122,7 @@ Option | Description
 ```
 
 # Special Thanks
-Thanks to contributors [hansterwal](https://github.com/hansterwal), [koenk](https://github.com/koenk) and [vpilo](https://github.com/vpilo)  for making this a better module !!!
+Thanks to contributors [hervidero](https://github.com/hervidero), [hansterwal](https://github.com/hansterwal), [koenk](https://github.com/koenk) and [vpilo](https://github.com/vpilo)  for making this a better module !!! 
 
 The MIT License (MIT)
 =====================
