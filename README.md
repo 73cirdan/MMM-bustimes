@@ -47,7 +47,7 @@ And check the names of the config options, because some of them have changed due
 |Version|Description|
 |---|---|
 |`Version 3.0.0`|**merge**<br>replaced `request` module with `axios` module, merged downstream fixes and updates of [hervidero](https://github.com/hervidero)|
-|`Version 2.0`|**bugfix**<br>| merged downstream fixes and updates [hansterwal](https://github.com/hansterwal), [koenk](https://github.com/koenk) and [vpilo](https://github.com/vpilo)|
+|`Version 2.0`|**bugfix**<br> merged downstream fixes and updates [hansterwal](https://github.com/hansterwal), [koenk](https://github.com/koenk) and [vpilo](https://github.com/vpilo)|
 |`Version 1.0`|**First release**<br>produced by 73cirdan|
 
 # Using the module
