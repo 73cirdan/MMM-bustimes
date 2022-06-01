@@ -42,6 +42,13 @@ Be sure to change the module name in config.js into `MMM-bustimes` if you are on
 Also rename the module folder `bustimes` into `MMM-bustimes`.
 And check the names of the config options, because some of them have changed due to consistency.
 
+# Version
+
+|Version|Description|
+|---|---|
+|`Version 3.0.0`|**merge**<br>replaced `request` module with `axios` module, merged downstream fixes and updates of [hervidero](https://github.com/hervidero)|
+|`Version 2.0`|**bugfix**<br>| merged downstream fixes and updates [hansterwal](https://github.com/hansterwal), [koenk](https://github.com/koenk) and [vpilo](https://github.com/vpilo)
+|`Version 1.0`|**First release**<br>produced by 73cirdan|
 
 # Using the module
 
