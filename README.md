@@ -1,4 +1,4 @@
-# bustimes
+# MMM-bustimes
 Magic Mirror - Dutch bus times
 
 Shows departures of buses, trams, metro's and ferries for any stop in the Netherlands.
@@ -23,14 +23,32 @@ options below for all available options.
 # Installation
 Navigate into your MagicMirror's `modules` folder and execute
 
-`git clone https://github.com/73cirdan/MMM-bustimes bustimes`
+`git clone https://github.com/73cirdan/MMM-bustimes`
 
 
-After that go into the `bustimes` folder and excute
+After that go into the `MMM-bustimes` folder and execute
 
 
 `npm install` 
 
+*Note:* After releasing MMM-bustimes, there were some forks made and updated with new options and some bugfixes. These were merged into MMM-bustimes in june 2022. The module now is named `MMM-bustimes` to reflect MM naming convention and uses `axios` in stead of the deprecated `request` module. 
+
+# Update
+
+`git pull` and `npm install` 
+
+
+Be sure to change the module name in config.js into `MMM-bustimes` if you are on an older version !!
+Also rename the module folder `bustimes` into `MMM-bustimes`.
+And check the names of the config options, because some of them have changed due to consistency.
+
+# Version
+
+|Version|Description|
+|---|---|
+|`Version 3.0.0`|**merge**<br>replaced `request` module with `axios` module, merged downstream fixes and updates of [hervidero](https://github.com/hervidero)|
+|`Version 2.0`|**bugfix**<br> merged downstream fixes and updates [hansterwal](https://github.com/hansterwal), [koenk](https://github.com/koenk) and [vpilo](https://github.com/vpilo)|
+|`Version 1.0`|**First release**<br>produced by 73cirdan|
 
 # Using the module
 
@@ -86,13 +104,16 @@ Option | Description
 `timingPointCode` | One or more TimingPointCodes. Use a comma separated list (`"code1,code2"`) if you need more than one departure list. When `stopAreaCode` is also set, results are combined.<br>**At least one of `timingPointCode` or `stopAreaCode` is required**
 `stopAreaCode` | One or more StopAreaCodes. Use a comma separated list (`"code1,code2"`) if you need more than one departure list. When `timingPointCode` is also set, results are combined.<br>**At least one of `timingPointCode` or `stopAreaCode` is required**
 `displaymode` | Layout of the module; see above for example and explanation.<br>*Possible values:* `"small"`, `"medium"`, `"large"`<br>**Required**
-`departs` | How many departures are shown per stop (not used in *small* mode).<br>*Default value:* `3`
+`departures` | How many departures are shown per stop (not used in *small* mode).<br>*Default value:* `3`
 `destinations` | An array with a every destination you care about. Only lines going to any of these destinations will be shown. Valid codes can be found in step 3, under the entry `DestinationCode` of each line.<br>*Default value:* `[]`
 `showTownName` | Include the town's name in the stop's name. This is especially useful for stops in small villages, e.g., "Alde Leie, Brug" instead of just "Brug".<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `showOnlyDepartures` | Only show departures from stops. This filters out lines that terminate at a stop, and thus do not let people get in the vehicle.<br>*Possible values:* `true` or `false`<br>*Default value:* `true`
 `showDelay` | Show departure times as scheduled times and an offset in case of a delay (or early departure). E.g., display "14:57+5" instead of "15:02".<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `showTransportTypeIcon` | Show an icon representing the transport type (bus, ferry, metro or tram) next to departures.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
-`showLiveIcon` | Show an icon representing whether the current displayed time is live (i.e., it has been updated in the last 10 minutes). Only works for *small* and *large* display modes.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
+`showTimingPointIcon` | Show an icon representing a modern electronic sign used at timingpoints.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
+`showOperator` | Display the name of the line operator.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
+`showAccessible` | Show an icon representing the timingpoint and line accessibility features: wheelchair, visual or both.<br>Icons will be displayed with for the timingpoint only if the timingpoint name is also displayed (see AlwaysShowStopName).<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
+`showLiveIcon` | Show an icon representing whether the current displayed time is live (i.e., it has been updated in the last 10 minutes).<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `showHeader` | Show a header with column names for the *large* display mode.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `alwaysShowStopName` | When this is set to `false` the name of the stop will be hidden when the module is only displaying data for a single stop in the *medium* or *large* display mode.<br>*Possible values:* `true` or `false`<br>*Default value:* `true`
 `timeFormat` | Format of departure times shown. E.g., `"HH:mm:ss"` will include seconds.<br>*Possible values:* any [Moment.js format string](https://momentjs.com/docs/#/displaying/format/)<br>*Default value:* `"HH:mm"`
@@ -100,20 +121,20 @@ Option | Description
 ## Example config.js content for this module
 ```javascript
     {
-        module: "bustimes",
+        module: "MMM-bustimes",
         position: "top_left",
         header: "Bustimes",
         config: {
             timingPointCode: "20320110,20141200",
             displaymode: "medium",
             showTownName: true,
-            departs: 3
+            departures: 3
         }
     },
 ```
 
 # Special Thanks
-Thanks to contributors [hansterwal](https://github.com/hansterwal), [koenk](https://github.com/koenk) and [vpilo](https://github.com/vpilo)  for making this a better module !!!
+Thanks to contributors [hervidero](https://github.com/hervidero), [hansterwal](https://github.com/hansterwal), [koenk](https://github.com/koenk) and [vpilo](https://github.com/vpilo)  for making this a better module !!! 
 
 The MIT License (MIT)
 =====================

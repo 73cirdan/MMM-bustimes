@@ -1,0 +1,86 @@
+/*.bustimes table, .bustimes th, .bustimes td {
+    border: 2px solid white;
+}*/
+.bustimes th {
+    text-align: center;
+}
+.bustimes .ovtable-small .stopname {
+    text-align: left;
+    padding-right: 5px;
+}
+.bustimes .ovtable-medium .stopname {
+    text-align: right;
+    padding-left: 10px;
+    font-size: 110%;
+}
+.bustimes .ovtable-large .stopname {
+    text-align: center;
+    font-weight: 400;
+    font-size: 120%;
+}
+.bustimes .ovtable-large .time {
+    font-weight: 400;
+    font-size: 110%;
+}
+.bustimes .ovtable-medium tr:not(:first-child) td.stopname {
+    padding-top: 5px;
+}
+.bustimes .ovtable-large tr:not(:first-child) td.stopname {
+    padding-top: 5px;
+}
+.bustimes .transporttype {
+    text-align: left;
+}
+.bustimes .ovtable-large .transporttype {
+    text-align: center;
+    padding-right: 5px;
+}
+.bustimes .ovtable-medium .transporttype:not(:first-child) {
+    padding-left: 5px;
+}
+.bustimes .ovtable-medium .time:last-child {
+    padding-right: 0px;
+}
+.bustimes .ovtable-medium .time:not(last-child) {
+    padding-right: 20px;
+}
+.bustimes .line {
+    text-align: right;
+    padding: 0px 5px 0px 0px;
+    font-weight: 900;
+}
+.bustimes .ovtable-medium .line:not(:first-child) {
+    padding-left: 5px;
+}
+.bustimes .time {
+    padding: 0px 5px 0px 5px;
+    text-align: left;
+    text-overflow: ellipsis;
+}
+.bustimes .destination {
+    padding: 0px 5px 0px 5px;
+    text-align: left;
+}
+.bustimes .liveicon {
+    padding-left: 4px;
+    font-size: 40%;
+    transform: rotate(45deg);
+}
+.bustimes .ovtable-large .timingpointicon {
+    padding-left: 5px;
+}
+.bustimes .accessibilityicon {
+    padding-left: 1px;
+    font-size: 60%;
+    vertical-align: baseline;
+}
+.bustimes .spacer {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.bustimes .operator::before {
+    content: "(";
+}
+.bustimes .operator::after {
+    content: ")";
+}

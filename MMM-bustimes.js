@@ -5,7 +5,7 @@
  * By Cirdan.
  *
  */
-Module.register("bustimes", {
+Module.register("MMM-bustimes", {
 
     scheduledTimer: -1,
 
@@ -22,15 +22,18 @@ Module.register("bustimes", {
         timeFormat: "HH:mm",
 
         destinations: null,
-
         departures: 3,
+
         showTownName: false,
         showOnlyDepartures: true,
         showDelay: false,
         showHeader: false,
         alwaysShowStopName: true,
+        showTimingPointIcon: false,
         showTransportTypeIcon: false,
         showLiveIcon: false,
+        showAccessible: false,
+        showOperator: false,
 
         transportTypeIcons: {
             "BUS": "bus",
@@ -39,6 +42,12 @@ Module.register("bustimes", {
             "BOAT": "ship",
             "default": "question-circle"
         },
+
+	timingpointTypeIcons: {
+            "WHEELCHAIR": "wheelchair",
+            "VISUAL": "blind",
+            "default": "sign"
+	},
 
         debug: false
     },
@@ -50,7 +59,7 @@ Module.register("bustimes", {
 
     // Define required scripts.
     getStyles: function() {
-        return ["bustimes.css", "font-awesome.css"];
+        return ["MMM-bustimes.css", "font-awesome.css"];
     },
 
     // Define required translations.
@@ -80,6 +89,10 @@ Module.register("bustimes", {
         if (this.config.timingPointCode === undefined && this.config.timepointcode) {
             this.config.timingPointCode = this.config.timepointcode;
             this.config.timepointcode = undefined;
+        }
+        if (this.config.departures === undefined && this.config.departs) {
+            this.config.departures = this.config.departs;
+            this.config.departs = undefined;
         }
 
         if (!this.config.timingPointCode && !this.config.stopAreaCode) {
@@ -193,6 +206,24 @@ Module.register("bustimes", {
         return cell
     },
 
+    createTransportTypeIcon: function(container, transportType, insert = true) {
+        const iconName = this.config.transportTypeIcons[transportType] ||
+                       this.config.transportTypeIcons["default"];
+        const icon = this.createIcon(iconName);
+        icon.className += " transporticon";
+        const lastchild = container.lastChild;
+        insert ? container.insertBefore(icon, lastchild) : container.appendChild(icon);
+     },
+
+    createTimingPointIcon: function(container, timingPointType, insert = true) {
+        const iconName = this.config.timingpointTypeIcons[timingPointType] ||
+                       this.config.timingpointTypeIcons["default"];
+        const icon = this.createIcon(iconName);
+        icon.className += (timingPointType == "default") ? " timingpointicon" : " accessibilityicon";
+        const lastchild = container.lastChild;
+        insert ? container.insertBefore(icon, lastchild) : container.appendChild(icon);
+     },
+
     /*
      * Create an icon representing the shown info is live if the info has been
      * updated in the last 10 minutes.
@@ -202,6 +233,7 @@ Module.register("bustimes", {
         const now = moment();
         const timeSinceLastUpdate = moment.duration(now.diff(lastUpdate));
         if (timeSinceLastUpdate.asMinutes() < 10) {
+            //"wifi' icon will be transformed by use of CSS to display a 45 degree rotated icon
             const icon = this.createIcon("wifi");
             icon.className += " liveicon";
             container.appendChild(icon);
@@ -210,7 +242,7 @@ Module.register("bustimes", {
 
     /*
      * Create the small table for departures, with a single row per stop,
-     * showing the earliest departure from that stop.
+     * showing the earliest departure from that stop. Destination not displayed.
      */
     createSmallTable: function(timingPointNames) {
         const table = this.createEmptyTable("ovtable-small");
@@ -219,14 +251,30 @@ Module.register("bustimes", {
             const departure = this.departures[timingPointName][0];
 
             const row = this.createRow(table);
-            const stop = this.createCell(row, timingPointName, "stopname");
+            if (this.config.alwaysShowStopName || timingPointNames.length > 1) {
+                const stop = this.createCell(row, timingPointName, "stopname");
+                if (this.config.showTimingPointIcon)
+                    this.createTimingPointIcon(stop, "default");
+                if (this.config.showAccessible) {
+                    if (departure.TimingPointWheelChairAccessible)
+                        this.createTimingPointIcon(stop, "WHEELCHAIR");
+                    if (departure.TimingPointVisualAccessible)
+                        this.createTimingPointIcon(stop, "VISUAL");
+                }
+            }
             if (this.config.showTransportTypeIcon)
                 this.createTransportTypeIconCell(row, departure.TransportType);
-            this.createCell(row, departure.LinePublicNumber, "line");
-            this.createCell(row, this.getDepartureTime(departure), "time");
+            const line = this.createCell(row, departure.LinePublicNumber, "line");
+            if (this.config.showAccessible) {
+                if (departure.LineWheelChairAccessible)
+                    this.createTimingPointIcon(line, "WHEELCHAIR", false);
+            }
+            if (this.config.showOperator)
+                this.createCell(row, departure.Operator, "operator");
+            const time = this.createCell(row, this.getDepartureTime(departure), "time");
 
             if (this.config.showLiveIcon)
-                this.createLiveIcon(stop, departure.LastUpdateTimeStamp);
+                this.createLiveIcon(time, departure.LastUpdateTimeStamp);
         }
         return table;
     },
@@ -234,29 +282,64 @@ Module.register("bustimes", {
     /*
      * Create the medium table for departures, with two rows per stop, one
      * showing the stop name and the second showing N upcoming departures.
+     * Destination not displayed.
      */
     createMediumTable: function(timingPointNames) {
         const table = this.createEmptyTable("ovtable-medium");
 
         const extraCols = this.config.showTransportTypeIcon ? 1 : 0;
+        const extraOpp = this.config.showOperator ? 1 : 0;
 
         for (const timingPointName of timingPointNames) {
             const timingPoint = this.departures[timingPointName];
 
+            /* Padding the table with minimal 3 'empty' blocks of cells, this keeps the table aligned when departures < 3.
+             */
+            const extraCells = (this.config.departures < 3) // Test 1
+                ? 3 - this.config.departures //T1=true: minimal 3 cells
+                : (timingPoint.length < this.config.departures) //T1=false: Test 2
+                ? this.config.departures - timingPoint.length //T2=true: substract
+                : 0; //T2=false: no extra cells needed
+
             if (this.config.alwaysShowStopName || timingPointNames.length > 1) {
                 const stopRow = this.createRow(table);
                 const cell = this.createCell(stopRow, timingPointName, "stopname");
-                cell.colSpan = (2 + extraCols) * this.config.departs;
+                if  (this.config.showTimingPointIcon || this.config.showAccessible)
+                    cell.innerHTML = "&nbsp;" + cell.innerHTML;
+                if (this.config.showTimingPointIcon)
+                    this.createTimingPointIcon(cell, "default");
+                if (this.config.showAccessible) {
+                    if (timingPoint[0].TimingPointWheelChairAccessible)
+                        this.createTimingPointIcon(cell, "WHEELCHAIR");
+                    if (timingPoint[0].TimingPointVisualAccessible)
+                        this.createTimingPointIcon(cell, "VISUAL");
+                }
+                cell.colSpan = (2 + extraCols + extraOpp) * (this.config.departures + extraCells);
             }
 
             const row = this.createRow(table);
-            for (let i = 0; i < this.config.departs && i in timingPoint; i++) {
+
+            // Add spacer cells when below 3 departures, and include an extra cell if Timingpoint icon is showed.
+            for (let i = 0; i < (2 + extraCols + extraOpp) * extraCells; i++) {
+                const spacer = this.createCell (row, '&nbsp;', "spacer");
+            }
+
+            for (let i = 0; i < this.config.departures && i in timingPoint; i++) {
                 const departure = timingPoint[i];
 
                 if (this.config.showTransportTypeIcon)
                     this.createTransportTypeIconCell(row, departure.TransportType);
-                this.createCell(row, departure.LinePublicNumber, "line");
-                this.createCell(row, this.getDepartureTime(departure), "time");
+                const line = this.createCell(row, departure.LinePublicNumber, "line");
+                if (this.config.showAccessible) {
+                    if (departure.LineWheelChairAccessible)
+                        this.createTimingPointIcon(line, "WHEELCHAIR", false);
+                }
+                if (this.config.showOperator)
+                    this.createCell(row, departure.Operator, "operator");
+                const time = this.createCell(row, this.getDepartureTime(departure), "time");
+
+                if (this.config.showLiveIcon)
+                    this.createLiveIcon(time, departure.LastUpdateTimeStamp);
             }
         }
         return table;
@@ -271,11 +354,16 @@ Module.register("bustimes", {
         const table = this.createEmptyTable("ovtable-large");
 
         const extraCols = this.config.showTransportTypeIcon ? 1 : 0;
+        const extraOpp = this.config.showOperator ? 1 : 0;
 
         if (this.config.showHeader) {
             const row = this.createRow(table);
             const cell = this.createCell(row, this.translate("line"), null, "th");
-            cell.colSpan = 2 + extraCols;
+            cell.colSpan = 1 + extraCols + extraOpp;
+            var text = this.translate("destination")
+            if (this.config.alwaysShowStopName || timingPointNames.length > 1)
+               text = this.translate("stopname") + " / " + text; 
+            this.createCell(row, text, null, "th");
             this.createCell(row, this.translate("departure"), null, "th");
         }
 
@@ -285,21 +373,35 @@ Module.register("bustimes", {
             if (this.config.alwaysShowStopName || timingPointNames.length > 1) {
                 const stopRow = this.createRow(table);
                 const cell = this.createCell(stopRow, timingPointName, "stopname");
-                cell.colSpan = 3 + extraCols;
+                if (this.config.showTimingPointIcon)
+                    this.createTimingPointIcon(cell, "default");
+                if (this.config.showAccessible) {
+                    if (timingPoint[0].TimingPointWheelChairAccessible)
+                        this.createTimingPointIcon(cell, "WHEELCHAIR");
+                    if (timingPoint[0].TimingPointVisualAccessible)
+                        this.createTimingPointIcon(cell, "VISUAL");
+                }
+                cell.colSpan = 3 + extraCols + extraOpp;
             }
 
-            for (let i = 0; i < this.config.departs && i in timingPoint; i++) {
+            for (let i = 0; i < this.config.departures && i in timingPoint; i++) {
                 const departure = timingPoint[i];
 
                 const row = this.createRow(table);
                 if (this.config.showTransportTypeIcon)
                     this.createTransportTypeIconCell(row, departure.TransportType);
                 const line = this.createCell(row, departure.LinePublicNumber, "line");
+                if (this.config.showAccessible) {
+                    if (departure.LineWheelChairAccessible)
+                        this.createTimingPointIcon(line, "WHEELCHAIR", false);
+                }
+                if (this.config.showOperator)
+                    this.createCell(row, departure.Operator, "operator");
                 const dest = this.createCell(row, departure.Destination, "destination");
                 const time = this.createCell(row, this.getDepartureTime(departure), "time");
 
                 if (this.config.showLiveIcon)
-                    this.createLiveIcon(dest, departure.LastUpdateTimeStamp);
+                    this.createLiveIcon(time, departure.LastUpdateTimeStamp);
             }
         }
         return table;
