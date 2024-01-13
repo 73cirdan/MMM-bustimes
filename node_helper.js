@@ -50,8 +50,11 @@ module.exports = NodeHelper.create({
     mergeData: function(timingPointData, stopAreaData) {
         const ret = {};
         Object.assign(ret, timingPointData);
-        for (const stopArea of Object.values(stopAreaData))
+        console.log(timingPointData);
+        for (const stopArea of Object.values(stopAreaData)) {
             Object.assign(ret, stopArea);
+       	    console.log(stopArea);
+	}
         return ret;
     },
 
@@ -110,14 +113,14 @@ module.exports = NodeHelper.create({
             if (departures[timingPointName].length == 0)
                 delete departures[timingPointName];
         }
-
+	console.log(departures);
         // Sort departures by time, per timingpoint.
         for (const departureList of Object.values(departures))
             departureList.sort(
                 (obj1, obj2) => obj1["ExpectedDepartureTime"].localeCompare(
                     obj2["ExpectedDepartureTime"]));
 
-        return departures;
+	return departures;
     },
 
     /*
@@ -151,6 +154,11 @@ module.exports = NodeHelper.create({
     },
 
     socketNotificationReceived: function(notification, payload) {
+	const axiosfix = payload.config.axiosfix;
+        if (axiosfix && axiosfix!="") {
+            axios.defaults.headers.common['User-Agent'] = axiosfix;
+        } // issue 15
+
         if (notification === 'GETDATA')
             this.getData(payload.identifier, payload.config);
     }
