@@ -46,6 +46,7 @@ And check the names of the config options, because some of them have changed due
 
 |Version|Description|
 |---|---|
+|`Version 3.0.1`|**bufix**<br>added an optional config option for users with a Axios get error (issue #15) |
 |`Version 3.0.0`|**merge**<br>replaced `request` module with `axios` module, merged downstream fixes and updates of [hervidero](https://github.com/hervidero)|
 |`Version 2.0`|**bugfix**<br> merged downstream fixes and updates [hansterwal](https://github.com/hansterwal), [koenk](https://github.com/koenk) and [vpilo](https://github.com/vpilo)|
 |`Version 1.0`|**First release**<br>produced by 73cirdan|
@@ -117,6 +118,8 @@ Option | Description
 `showHeader` | Show a header with column names for the *large* display mode.<br>*Possible values:* `true` or `false`<br>*Default value:* `false`
 `alwaysShowStopName` | When this is set to `false` the name of the stop will be hidden when the module is only displaying data for a single stop in the *medium* or *large* display mode.<br>*Possible values:* `true` or `false`<br>*Default value:* `true`
 `timeFormat` | Format of departure times shown. E.g., `"HH:mm:ss"` will include seconds.<br>*Possible values:* any [Moment.js format string](https://momentjs.com/docs/#/displaying/format/)<br>*Default value:* `"HH:mm"`
+`axiosfix`| Fixes issue #15, set to "PostmanRuntime/7.26.2"<br>*Default:* `Do not use, if there is no problem`
+
 
 ## Example config.js content for this module
 ```javascript
