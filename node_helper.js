@@ -50,10 +50,10 @@ module.exports = NodeHelper.create({
     mergeData: function(timingPointData, stopAreaData) {
         const ret = {};
         Object.assign(ret, timingPointData);
-        console.log(timingPointData);
+        //console.log(timingPointData);
         for (const stopArea of Object.values(stopAreaData)) {
             Object.assign(ret, stopArea);
-       	    console.log(stopArea);
+       	    //console.log(stopArea);
 	}
         return ret;
     },
@@ -113,7 +113,7 @@ module.exports = NodeHelper.create({
             if (departures[timingPointName].length == 0)
                 delete departures[timingPointName];
         }
-	console.log(departures);
+	//console.log(departures);
         // Sort departures by time, per timingpoint.
         for (const departureList of Object.values(departures))
             departureList.sort(
