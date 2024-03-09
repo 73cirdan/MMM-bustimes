@@ -1,5 +1,5 @@
 # MMM-bustimes
-Magic Mirror - Dutch bus times
+MagicMirror² - Dutch bus times
 
 Shows departures of buses, trams, metro's and ferries for any stop in the Netherlands.
 Based on data from OVapi, a public API for Dutch public transport information.
