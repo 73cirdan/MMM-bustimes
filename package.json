@@ -1,7 +1,7 @@
 {
   "name": "MMM-bustimes",
   "version": "3.0.1",
-  "description": "A module for MagicMirror which shows the times for some public transport in the Netherlands ",
+  "description": "A module for MagicMirror² which shows the times for some public transport in the Netherlands ",
   "main": "MMM-bustimes.js",
   "repository": {
     "type": "git",
@@ -10,6 +10,7 @@
   "keywords": [
     "MagicMirror",
     "Bus",
+    "Public Transport",
     "Times"
   ],
   "author": "Cirdan",
