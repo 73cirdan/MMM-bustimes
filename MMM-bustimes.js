@@ -1,5 +1,5 @@
 /* global Module */
-/* Magic Mirror
+/* MagicMirror²
  * Module: BusTimes
  *
  * By Cirdan.
