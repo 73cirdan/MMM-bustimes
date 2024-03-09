@@ -1,6 +1,6 @@
 'use strict';
 
-/* Magic Mirror
+/* MagicMirror²
  * Module: MMM-bustimes
  *
  * Adapted for Dutch system by Cirdan
