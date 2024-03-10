@@ -1,5 +1,4 @@
 'use strict';
-
 /* MagicMirror²
  * Module: MMM-bustimes
  *
@@ -9,22 +8,17 @@
  */
 
 const NodeHelper = require('node_helper');
-const axios = require("axios").default;
 
 /*
- * A wrapper for axios.get that throws an error if the status code is not 200.
+ * A wrapper for fetch that throws an error if the status code is not 200.
  */
-const getCheckedAsync = (url) =>
-    
-    axios.get(url)
-    .catch(err => {
-        throw new Error("Error fetching " + url + ": " + err);
-    })
-    .then(({status, data}) => {
-        if (status != 200)
-            throw new Error("Error fetching " + url + ": Status " + status);
-        return data;
-    });
+const getCheckedAsync = async (url) => {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`Error fetching ${url}: Status ${response.status}`);
+    }
+    return response.json();
+};
 
 module.exports = NodeHelper.create({
     /*
@@ -34,12 +28,10 @@ module.exports = NodeHelper.create({
     fetchData: function(config, endpoint, code) {
         if (!code)
             return Promise.resolve({});
-
         let url = config.apiBase + "/" + endpoint + "/" + code;
         if (config.showOnlyDepartures)
             url += "/" + config.departuresOnlySuffix;
-
-        return getCheckedAsync(url)
+        return getCheckedAsync(url);
     },
 
     /*
@@ -154,11 +146,6 @@ module.exports = NodeHelper.create({
     },
 
     socketNotificationReceived: function(notification, payload) {
-	const axiosfix = payload.config.axiosfix;
-        if (axiosfix && axiosfix!="") {
-            axios.defaults.headers.common['User-Agent'] = axiosfix;
-        } // issue 15
-
         if (notification === 'GETDATA')
             this.getData(payload.identifier, payload.config);
     }
