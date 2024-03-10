@@ -41,7 +41,7 @@ And check the names of the config options, because some of them have changed due
 |Version|Description|
 |---|---|
 |`Version 3.1.0`|**update**<br>replaced `axios` by internal `fetch`. |
-|`Version 3.0.1`|**bufix**<br>added an optional config option for users with a Axios get error (issue #15) |
+|`Version 3.0.1`|**bugfix**<br>added an optional config option for users with a Axios get error (issue #15) |
 |`Version 3.0.0`|**merge**<br>replaced `request` module with `axios` module, merged downstream fixes and updates of [hervidero](https://github.com/hervidero)|
 |`Version 2.0`|**bugfix**<br> merged downstream fixes and updates [hansterwal](https://github.com/hansterwal), [koenk](https://github.com/koenk) and [vpilo](https://github.com/vpilo)|
 |`Version 1.0`|**First release**<br>produced by 73cirdan|
