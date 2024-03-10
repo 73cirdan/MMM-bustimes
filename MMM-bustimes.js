@@ -13,7 +13,7 @@ Module.register("MMM-bustimes", {
     defaults: {
         animationSpeed: 1000,
 
-        apiBase: "http://v0.ovapi.nl",
+        apiBase: "https://v0.ovapi.nl",
         timingPointEndpoint: "tpc",
         stopAreaEndpoint: "stopareacode",
         departuresOnlySuffix: "departures",
