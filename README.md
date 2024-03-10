@@ -61,37 +61,37 @@ a street, or a station). This module supports both.
 More information can be found on the
 [OVapi wiki](https://github.com/skywave/KV78Turbo-OVAPI/wiki).
 
-1. Open `http://v0.ovapi.nl/line/` in a browser to find your line in the list of
+1. Open `https://v0.ovapi.nl/line/` in a browser to find your line in the list of
    all lines.  You can find your line in the result by searching for a city,
    line number, or start/end points. Note that most lines will have two entries:
    one for each direction buses run in.<br>
    *For example, the first line in the resulting JSON was `ARR_28167_2`: Arriva
    line 7911 from Stiens to Alde Leie.*
 
-2. Open `http://v0.ovapi.nl/line/[lineid]` in a browser to check your result
+2. Open `https://v0.ovapi.nl/line/[lineid]` in a browser to check your result
    (e.g., if it is the correct direction), and to find the line stops.  Replace
    the `[lineid]` part in the URL with the ID you found in step one (often in
    the form of `<operator>_<linenr>_<direction>`). Then look through the stops
    for the one you want to use, and write down the `TimingPointCode` or
    `StopAreaCode`.<br>
-   *Based on the example in step one: at `http://v0.ovapi.nl/line/ARR_28167_2`
+   *Based on the example in step one: at `https://v0.ovapi.nl/line/ARR_28167_2`
    we find `"TimingPointName":"Alde Leie,Brug","TimingPointCode":"20320110","StopAreaCode":"OliBru"`.*
 
 3. Check the result, depending on whether you choose to use a TimingPoint or
    StopArea:
-   - **TimingPointCode:** Check `http://v0.ovapi.nl/tpc/[tpc]`, where `[tpc]` is
+   - **TimingPointCode:** Check `https://v0.ovapi.nl/tpc/[tpc]`, where `[tpc]` is
      the TimingPointCode you found in step 2. Mind the change from *line* to
      *tpc* in the URL. The passes part of the result should contain buses,
      trams or boats stopping at this stop. All lines terminating at this stop
      are included. If all looks good, copy the tpc into the config.<br>
-     *Based on the example in step two, we get `http://v0.ovapi.nl/tpc/20320110`.*
-   - **StopAreaCode:** Check `http://v0.ovapi.nl/stopareacode/[sac]`, where
+     *Based on the example in step two, we get `https://v0.ovapi.nl/tpc/20320110`.*
+   - **StopAreaCode:** Check `https://v0.ovapi.nl/stopareacode/[sac]`, where
      `[sac]` is the StopAreaCode you found in step 2. Mind the change from
      *line* to *stopareacode* in the URL. The passes part of the result
      should contain buses, trams or boats stopping at this stop. All lines
      terminating at this stop are included. If all looks good, copy the sac into
      the config.<br>
-     *Based on the example in step two, we get `http://v0.ovapi.nl/stopareacode/OliBru`.*
+     *Based on the example in step two, we get `https://v0.ovapi.nl/stopareacode/OliBru`.*
 
 ## Config options
 
