@@ -61,7 +61,7 @@ module.exports = NodeHelper.create({
         // we get info about the stop itself, and all the passes (i.e.,
         // arrivals/departures of vehicles).
         for (const {Stop, Passes} of Object.values(data)) {
-            const timingPointName = includeTownName ?
+            const timingPointName = includeTownName && Stop.TimingPointTown !== "unknown" ?
                 Stop.TimingPointTown + ", " + Stop.TimingPointName :
                 Stop.TimingPointName;
 
